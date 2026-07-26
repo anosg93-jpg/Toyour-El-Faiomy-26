@@ -46,10 +46,10 @@
         }
         .loader-content { text-align: center; }
         .loader-logo-big {
-            width: 140px; height: 140px; border-radius: 50%;
+            width: 140px; height: 140px; border-radius: 22px;
             margin-bottom: 15px; animation: pulse 1.5s infinite ease-in-out;
             object-fit: cover; box-shadow: 0 10px 30px rgba(138, 21, 27, 0.2);
-            border: 3px solid var(--yellow-gold);
+            border: 2px solid var(--yellow-gold);
         }
         .loader-text { font-weight: 800; color: var(--accent); font-size: 1.8rem; margin-bottom: 6px; }
         .loader-slogan { font-size: 0.95rem; color: var(--desc-text); font-weight: 700; }
@@ -74,13 +74,14 @@
             display: flex; flex-direction: column; align-items: center; padding: 12px 0 8px 0;
         }
         .header-top { width: 100%; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 8px; }
+        
         .header-logo-container { 
-            width: 100px; height: 100px; border-radius: 50%; 
+            width: 100px; height: 100px; border-radius: 20px; 
             box-shadow: 0 4px 20px rgba(138, 21, 27, 0.15); 
-            overflow: hidden; border: 2.5px solid var(--yellow-gold);
-            background: var(--white);
+            overflow: hidden; border: 2px solid var(--yellow-gold);
+            background: #000;
         }
-        .header-logo { width: 100%; height: 100%; object-fit: cover; }
+        .header-logo { width: 100%; height: 100%; object-fit: cover; display: block; }
         
         .theme-toggle { position: absolute; right: 20px; top: 0; width: 42px; height: 42px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; border: none; color: var(--main-text); }
         .cart-trigger-container { position: absolute; left: 20px; top: 0; }
@@ -113,7 +114,7 @@
         .category-nav.few-items { justify-content: space-around; }
 
         .cat-item { display: flex; flex-direction: column; align-items: center; min-width: 75px; cursor: pointer; }
-        .cat-img-box { width: 55px; height: 55px; border-radius: 50%; background: #e5e5ea; overflow: hidden; border: 2px solid transparent; transition: 0.3s; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
+        .cat-img-box { width: 55px; height: 55px; border-radius: 14px; background: #e5e5ea; overflow: hidden; border: 2px solid transparent; transition: 0.3s; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
         .cat-img-box img { width: 100%; height: 100%; object-fit: cover; }
         .cat-item.active .cat-img-box { border-color: var(--accent); transform: scale(1.06); box-shadow: 0 4px 12px rgba(138, 21, 27, 0.25); }
         .cat-item span { font-size: 0.78rem; font-weight: 800; color: var(--desc-text); margin-top: 4px; }
@@ -132,6 +133,11 @@
             gap: 12px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.04); 
             border: 1px solid rgba(0,0,0,0.05); 
+            position: relative;
+        }
+        .food-card.unavailable {
+            opacity: 0.55;
+            filter: grayscale(0.8);
         }
         .food-card-top { display: flex; gap: 12px; align-items: flex-start; }
         .item-img-box { width: 95px; height: 95px; border-radius: 16px; overflow: hidden; background: #e5e5ea; flex-shrink: 0; }
@@ -151,28 +157,20 @@
             border: 1px solid rgba(0,0,0,0.04);
         }
 
-        .birds-count-row { 
+        .option-control-row { 
             display: flex; 
             align-items: center; 
             justify-content: space-between; 
-            background: rgba(138, 21, 27, 0.05); 
+            background: var(--bg); 
             padding: 6px 12px; 
             border-radius: 12px; 
         }
-        .birds-count-label { font-size: 0.85rem; font-weight: 800; color: var(--main-text); }
-
-        .size-picker-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--bg);
-            padding: 6px 12px;
-            border-radius: 12px;
-        }
-        .size-picker-label {
-            font-size: 0.85rem;
-            font-weight: 800;
-            color: var(--main-text);
+        .option-control-label { 
+            font-size: 0.85rem; 
+            font-weight: 800; 
+            color: var(--main-text); 
+            min-width: 120px;
+            text-align: right;
         }
 
         .cleaning-checkbox-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.82rem; font-weight: 800; color: var(--accent); margin-top: 2px; }
@@ -180,12 +178,13 @@
 
         .qty-btns-group { display: flex; align-items: center; gap: 8px; }
         .qty-btn { background: var(--accent); color: white; border: none; width: 28px; height: 28px; border-radius: 8px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .qty-val { font-weight: 800; font-size: 0.95rem; min-width: 24px; text-align: center; color: var(--main-text); }
+        .qty-val { font-weight: 800; font-size: 0.95rem; width: 70px; text-align: center; color: var(--main-text); display: inline-block; }
 
         .notes-input { width: 100%; background: var(--bg); border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 8px 12px; font-size: 0.8rem; font-weight: 700; color: var(--main-text); outline: none; }
 
         .order-btn { background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 12px; font-size: 0.9rem; font-weight: 800; cursor: pointer; transition: 0.3s; width: 100%; text-align: center; }
         .order-btn.added { background: var(--main-text); }
+        .order-btn:disabled { background: #888 !important; cursor: not-allowed; }
 
         /* --- Footer --- */
         .restaurant-footer { padding: 25px 20px; text-align: center; background: var(--white); border-top: 1px solid rgba(0,0,0,0.05); margin-top: 20px; }
@@ -201,11 +200,13 @@
         .social-btn-link.wa-color { background: #25D366; }
         .social-btn-link svg { width: 22px; height: 22px; fill: white; }
 
-        .footer-rights { font-size: 0.78rem; color: var(--main-text); font-weight: 700; margin-bottom: 4px; }
+        .footer-rights { font-size: 0.78rem; color: var(--main-text); font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .admin-gear-btn { background: transparent; border: none; cursor: pointer; font-size: 1rem; opacity: 0.6; }
+        
         .dev-credit { font-size: 0.82rem; color: var(--desc-text); font-weight: 700; }
         .dev-credit a { color: var(--accent); text-decoration: none; display: block; }
 
-        /* مودال السلة */
+        /* مودالات */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: none; justify-content: center; align-items: flex-end; }
         .modal-content { background: var(--white); width: 100%; max-width: 500px; padding: 22px; border-radius: 25px 25px 0 0; max-height: 90vh; overflow-y: auto; color: var(--main-text); }
         .cart-item-card { display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(0,0,0,0.04); border-radius: 16px; margin-bottom: 8px; }
@@ -229,6 +230,20 @@
         /* شريط التثبيت */
         #install-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 12px 18px; display: none; justify-content: space-between; align-items: center; z-index: 1500; border-radius: 18px 18px 0 0; }
         .install-btn { background: var(--yellow-gold); color: #2b1e1a; border: none; padding: 6px 15px; border-radius: 10px; font-weight: 800; font-size: 0.8rem; cursor: pointer; }
+
+        /* --- لوحة تحكم الأدمن --- */
+        .admin-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 12px; margin-bottom: 8px; }
+        .admin-item-name { font-size: 0.85rem; font-weight: 800; }
+        .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(22px); }
+        .admin-bulk-btns { display: flex; gap: 8px; margin-bottom: 12px; }
+        .admin-bulk-btn { flex: 1; padding: 8px; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; font-size: 0.8rem; }
+        .btn-enable-all { background: #25D366; color: white; }
+        .btn-disable-all { background: #ff3b30; color: white; }
     </style>
 </head>
 <body>
@@ -289,7 +304,10 @@
             </a>
         </div>
 
-        <p class="footer-rights">جميع الحقوق محفوظة لـ طيور الفيومي 2026 ©</p>
+        <p class="footer-rights">
+            جميع الحقوق محفوظة لـ طيور الفيومي 2026 ©
+            <button class="admin-gear-btn" onclick="promptAdminPassword()">⚙️</button>
+        </p>
         <div class="dev-credit">
             Designed by eng / Anas Gaber shehata
             <a href="tel:01003800314">📞 01003800314</a>
@@ -341,6 +359,59 @@
         </div>
     </div>
 
+    <!-- مودال لوحة تحكم الإدارة -->
+    <div class="modal" id="adminModal" onclick="if(event.target==this) toggleAdminModal(false)">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 12px; color: var(--accent);">⚙️ لوحة تحكم الأصناف</h2>
+            
+            <div class="admin-bulk-btns">
+                <button class="admin-bulk-btn btn-enable-all" onclick="setAllItemsAvailability(true)">✅ تشغيل جميع الأصناف</button>
+                <button class="admin-bulk-btn btn-disable-all" onclick="setAllItemsAvailability(false)">🚫 إيقاف جميع الأصناف</button>
+            </div>
+
+            <div id="adminItemsList"></div>
+            
+            <button class="submit-btn" style="margin-top: 15px;" onclick="toggleAdminModal(false)">إغلاق اللوحة</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA6hrf5ziL8BWCDxkp8qg69fbbOvni_1KY",
+            authDomain: "toyour-alfayoumi.firebaseapp.com",
+            databaseURL: "https://toyour-alfayoumi-default-rtdb.firebaseio.com",
+            projectId: "toyour-alfayoumi",
+            storageBucket: "toyour-alfayoumi.firebasestorage.app",
+            messagingSenderId: "1090038451007",
+            appId: "1:1090038451007:web:1fa5afa67f97323e70e18a",
+            measurementId: "G-09KJRWKNSN"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.db = db;
+        window.dbRef = ref;
+        window.dbOnValue = onValue;
+        window.dbSet = set;
+
+        // الاستماع الفوري لتوفر المنتجات
+        const availabilityRef = ref(db, 'availability');
+        onValue(availabilityRef, (snapshot) => {
+            window.itemAvailability = snapshot.val() || {};
+            if (window.currentSelectedCategory) {
+                window.filterCat(window.currentSelectedCategory);
+            }
+            if (document.getElementById('adminModal').style.display === 'flex') {
+                window.renderAdminControlList();
+            }
+        });
+    </script>
+
     <script>
         const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvU4LlOdi2STw-gtPKw9xc76tuRsujkFV6tTdPd2cLpLGSUoC4X4bmgAoY0QcKfKACbSKINa8WtIG7/pub?output=csv';
         const IMAGES_PATH = "./images/"; 
@@ -349,6 +420,9 @@
         let deferredPrompt;
         
         let birdCounts = {}; 
+        let generalKiloCounts = {};
+        window.itemAvailability = {};
+        window.currentSelectedCategory = "";
 
         const sizeOptions = [
             { val: 1.0, text: "1.0 كيلو" },
@@ -435,87 +509,131 @@
             if (uniqueCats.length > 0) filterCat(uniqueCats[0]);
         }
 
+        function isBirdsCategory(item) {
+            const cat = item.category || '';
+            return cat.includes('طيور') || cat.includes('طيور طازجة');
+        }
+
         function getCleaningFee(item) {
             const name = item.name || '';
-            const cat = item.category || '';
-            if (name.includes('بط') || cat.includes('بط')) return 20;
-            if (name.includes('فرخ') || name.includes('فراخ') || name.includes('دجاج') || name.includes('أرنب') || cat.includes('طيور') || cat.includes('فراخ')) return 10;
-            return 0;
+            if (name.includes('بط')) return 20;
+            if (name.includes('فرخ') || name.includes('فراخ') || name.includes('دجاج') || name.includes('أرنب') || name.includes('ارنب') || name.includes('رومي') || name.includes('حمام')) return 10;
+            return 10;
         }
 
         function getItemTypeLabel(item) {
             const name = item.name || '';
-            const cat = item.category || '';
-            if (name.includes('بط') || cat.includes('بط')) return '⚖️ حجم كل بطة:';
-            if (name.includes('أرنب') || cat.includes('أرنب')) return '⚖️ حجم كل أرنب:';
-            if (name.includes('حمام') || cat.includes('حمام')) return '⚖️ حجم كل جوز:';
-            if (name.includes('رومي') || cat.includes('رومي')) return '⚖️ حجم كل ديك:';
+            if (name.includes('بط')) return '⚖️ حجم كل بطة:';
+            if (name.includes('أرنب') || name.includes('ارنب')) return '⚖️ حجم كل أرنب:';
+            if (name.includes('حمام')) return '⚖️ حجم كل جوز:';
+            if (name.includes('رومي')) return '⚖️ حجم كل ديك:';
             return '⚖️ حجم كل فرخة:';
         }
 
+        function cleanItemKey(name) {
+            return name.replace(/[.#$/\[\]]/g, "_");
+        }
+
         function filterCat(cat, el) {
+            window.currentSelectedCategory = cat;
             if(el) { document.querySelectorAll('.cat-item').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
             
             const filteredItems = menuData.filter(i => i.category === cat);
 
             document.getElementById('menuList').innerHTML = filteredItems.map((item, index) => {
-                const cleanFee = getCleaningFee(item);
-                const hasCleaning = cleanFee > 0;
                 const kiloPrice = parseFloat(item.price) || 0;
                 const cardKey = `${cat}_${index}`;
-                const sizeLabelText = getItemTypeLabel(item);
-                
-                birdCounts[cardKey] = birdCounts[cardKey] || 1; 
-                selectedSizes[cardKey] = selectedSizes[cardKey] || sizeOptions[2]; // الافتراضي 2.0 كيلو
+                const itemKey = cleanItemKey(item.name);
+                const isAvailable = window.itemAvailability[itemKey] !== false; // متوفر افتراضياً
+                const isBird = isBirdsCategory(item);
 
-                return `
-                <div class="food-card">
-                    <div class="food-card-top">
-                        <div class="item-img-box"><img src="${item.img}" onerror="this.src='${IMAGES_PATH}default.jpg'"></div>
-                        <div class="food-info-top">
-                            <div class="food-name">${item.name}</div>
-                            <div class="kilo-price-tag">📌 سعر الكيلو: <b>${kiloPrice} ج.م</b></div>
-                            <div class="food-price-total" id="card_price_${cardKey}">${Math.round(kiloPrice * selectedSizes[cardKey].val * birdCounts[cardKey])} ج.م</div>
-                        </div>
-                    </div>
+                if (isBird) {
+                    const cleanFee = getCleaningFee(item);
+                    const sizeLabelText = getItemTypeLabel(item);
+                    
+                    birdCounts[cardKey] = birdCounts[cardKey] || 1; 
+                    selectedSizes[cardKey] = selectedSizes[cardKey] || sizeOptions[2];
 
-                    <div class="card-options-box">
-                        <!-- 1. عدد الطيور المطلوب أصبح في الأول -->
-                        <div class="birds-count-row">
-                            <span class="birds-count-label">🐓 عدد الطيور المطلوب:</span>
-                            <div class="qty-btns-group">
-                                <button class="qty-btn" onclick="changeBirdCount('${cardKey}', -1, ${kiloPrice})">-</button>
-                                <span class="qty-val" id="birds_num_${cardKey}">${birdCounts[cardKey]}</span>
-                                <button class="qty-btn" onclick="changeBirdCount('${cardKey}', 1, ${kiloPrice})">+</button>
+                    return `
+                    <div class="food-card ${isAvailable ? '' : 'unavailable'}">
+                        <div class="food-card-top">
+                            <div class="item-img-box"><img src="${item.img}" onerror="this.src='${IMAGES_PATH}default.jpg'"></div>
+                            <div class="food-info-top">
+                                <div class="food-name">${item.name}</div>
+                                <div class="kilo-price-tag">📌 سعر الكيلو: <b>${kiloPrice} ج.م</b></div>
+                                <div class="food-price-total" id="card_price_${cardKey}">${Math.round(kiloPrice * selectedSizes[cardKey].val * birdCounts[cardKey])} ج.م</div>
                             </div>
                         </div>
 
-                        <!-- 2. حجم كل فرخة/بطة أصبح أسفله مباشرة -->
-                        <div class="size-picker-container">
-                            <span class="size-picker-label">${sizeLabelText}</span>
-                            <div class="qty-btns-group">
-                                <button class="qty-btn" onclick="changeSizeStep('${cardKey}', -1, ${kiloPrice})">-</button>
-                                <span class="qty-val" style="min-width: 65px;" id="size_val_text_${cardKey}">${selectedSizes[cardKey].text}</span>
-                                <button class="qty-btn" onclick="changeSizeStep('${cardKey}', 1, ${kiloPrice})">+</button>
+                        <div class="card-options-box">
+                            <div class="option-control-row">
+                                <span class="option-control-label">🐓 عدد الطيور المطلوب:</span>
+                                <div class="qty-btns-group">
+                                    <button class="qty-btn" ${!isAvailable ? 'disabled' : ''} onclick="changeBirdCount('${cardKey}', -1, ${kiloPrice})">-</button>
+                                    <span class="qty-val" id="birds_num_${cardKey}">${birdCounts[cardKey]}</span>
+                                    <button class="qty-btn" ${!isAvailable ? 'disabled' : ''} onclick="changeBirdCount('${cardKey}', 1, ${kiloPrice})">+</button>
+                                </div>
                             </div>
-                        </div>
 
-                        ${hasCleaning ? `
+                            <div class="option-control-row">
+                                <span class="option-control-label">${sizeLabelText}</span>
+                                <div class="qty-btns-group">
+                                    <button class="qty-btn" ${!isAvailable ? 'disabled' : ''} onclick="changeSizeStep('${cardKey}', -1, ${kiloPrice})">-</button>
+                                    <span class="qty-val" id="size_val_text_${cardKey}">${selectedSizes[cardKey].text}</span>
+                                    <button class="qty-btn" ${!isAvailable ? 'disabled' : ''} onclick="changeSizeStep('${cardKey}', 1, ${kiloPrice})">+</button>
+                                </div>
+                            </div>
+
                             <div class="option-row" style="display:flex; justify-content:space-between; align-items:center;">
                                 <label class="cleaning-checkbox-label">
-                                    <input type="checkbox" id="clean_chk_${cardKey}" data-fee="${cleanFee}" onchange="updateCardPrice('${cardKey}', ${kiloPrice})">
+                                    <input type="checkbox" ${!isAvailable ? 'disabled' : ''} id="clean_chk_${cardKey}" data-fee="${cleanFee}" onchange="updateCardPrice('${cardKey}', ${kiloPrice})">
                                     <span>خدمة تنظيف (+${cleanFee}ج للطير)</span>
                                 </label>
                             </div>
-                        ` : ''}
-                    </div>
+                        </div>
 
-                    <input type="text" class="notes-input" id="notes_${cardKey}" placeholder="✍️ أي ملاحظة؟ (مثال: تقطيع 8 قطع، بدون جلد...)">
+                        <input type="text" class="notes-input" ${!isAvailable ? 'disabled' : ''} id="notes_${cardKey}" placeholder="✍️ أي ملاحظة؟ (مثال: تقطيع 8 قطع، بدون جلد...)">
 
-                    <button class="order-btn" onclick="addToCart(event, this, '${item.name}', ${kiloPrice}, '${item.img}', '${item.category}', '${cardKey}')">اطلب الآن 🛒</button>
-                </div>`;
+                        <button class="order-btn" ${!isAvailable ? 'disabled' : ''} onclick="addToCart(event, this, '${item.name}', ${kiloPrice}, '${item.img}', '${item.category}', '${cardKey}', true)">
+                            ${isAvailable ? 'اطلب الآن 🛒' : 'غير متوفر حالياً 🚫'}
+                        </button>
+                    </div>`;
+                } else {
+                    generalKiloCounts[cardKey] = generalKiloCounts[cardKey] || 1;
+
+                    return `
+                    <div class="food-card ${isAvailable ? '' : 'unavailable'}">
+                        <div class="food-card-top">
+                            <div class="item-img-box"><img src="${item.img}" onerror="this.src='${IMAGES_PATH}default.jpg'"></div>
+                            <div class="food-info-top">
+                                <div class="food-name">${item.name}</div>
+                                <div class="kilo-price-tag">📌 سعر الكيلو: <b>${kiloPrice} ج.م</b></div>
+                                <div class="food-price-total" id="card_price_${cardKey}">${Math.round(kiloPrice * generalKiloCounts[cardKey])} ج.م</div>
+                            </div>
+                        </div>
+
+                        <div class="card-options-box">
+                            <div class="option-control-row">
+                                <span class="option-control-label">⚖️ الوزن المطلوب:</span>
+                                <div class="qty-btns-group">
+                                    <button class="qty-btn" ${!isAvailable ? 'disabled' : ''} onclick="changeGeneralKilo('${cardKey}', -1, ${kiloPrice})">-</button>
+                                    <span class="qty-val" id="gen_kilo_${cardKey}">${generalKiloCounts[cardKey]} كيلو</span>
+                                    <button class="qty-btn" ${!isAvailable ? 'disabled' : ''} onclick="changeGeneralKilo('${cardKey}', 1, ${kiloPrice})">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="text" class="notes-input" ${!isAvailable ? 'disabled' : ''} id="notes_${cardKey}" placeholder="✍️ أي ملاحظات إضافية؟">
+
+                        <button class="order-btn" ${!isAvailable ? 'disabled' : ''} onclick="addToCart(event, this, '${item.name}', ${kiloPrice}, '${item.img}', '${item.category}', '${cardKey}', false)">
+                            ${isAvailable ? 'اطلب الآن 🛒' : 'غير متوفر حالياً 🚫'}
+                        </button>
+                    </div>`;
+                }
             }).join('');
         }
+
+        window.filterCat = filterCat;
 
         function changeSizeStep(cardKey, delta, kiloPrice) {
             let currentIdx = sizeOptions.findIndex(o => o.val === selectedSizes[cardKey].val);
@@ -534,6 +652,13 @@
             birdCounts[cardKey] = Math.max(1, (birdCounts[cardKey] || 1) + delta);
             document.getElementById(`birds_num_${cardKey}`).innerText = birdCounts[cardKey];
             updateCardPrice(cardKey, kiloPrice);
+        }
+
+        function changeGeneralKilo(cardKey, delta, kiloPrice) {
+            generalKiloCounts[cardKey] = Math.max(1, (generalKiloCounts[cardKey] || 1) + delta);
+            document.getElementById(`gen_kilo_${cardKey}`).innerText = `${generalKiloCounts[cardKey]} كيلو`;
+            const priceEl = document.getElementById(`card_price_${cardKey}`);
+            if (priceEl) priceEl.innerText = `${Math.round(kiloPrice * generalKiloCounts[cardKey])} ج.م`;
         }
 
         function updateCardPrice(cardKey, kiloPrice) {
@@ -555,28 +680,37 @@
             priceEl.innerText = `${Math.round(total)} ج.م`;
         }
 
-        function addToCart(e, btn, name, kiloPrice, img, category, cardKey) {
-            const count = birdCounts[cardKey] || 1;
-            const sizeObj = selectedSizes[cardKey] || sizeOptions[2];
-            const sizeText = sizeObj.text;
-            const sizeWeight = sizeObj.val;
-            
-            const chk = document.getElementById(`clean_chk_${cardKey}`);
+        function addToCart(e, btn, name, kiloPrice, img, category, cardKey, isBird) {
             const notesInput = document.getElementById(`notes_${cardKey}`);
             const notes = notesInput ? notesInput.value.trim() : '';
+            let totalItemPrice = 0;
+            let displayName = "";
 
-            let singleBirdPrice = kiloPrice * sizeWeight;
-            let cleaningText = "";
+            if (isBird) {
+                const count = birdCounts[cardKey] || 1;
+                const sizeObj = selectedSizes[cardKey] || sizeOptions[2];
+                const sizeText = sizeObj.text;
+                const sizeWeight = sizeObj.val;
+                
+                const chk = document.getElementById(`clean_chk_${cardKey}`);
 
-            if (chk && chk.checked) {
-                const cleanFee = parseFloat(chk.dataset.fee) || 0;
-                singleBirdPrice += cleanFee;
-                cleaningText = " + تنظيف";
+                let singleBirdPrice = kiloPrice * sizeWeight;
+                let cleaningText = "";
+
+                if (chk && chk.checked) {
+                    const cleanFee = parseFloat(chk.dataset.fee) || 0;
+                    singleBirdPrice += cleanFee;
+                    cleaningText = " + تنظيف";
+                }
+
+                totalItemPrice = Math.round(singleBirdPrice * count);
+                displayName = `${name} (${count} طير - ${sizeText}${cleaningText})`;
+            } else {
+                const kilos = generalKiloCounts[cardKey] || 1;
+                totalItemPrice = Math.round(kiloPrice * kilos);
+                displayName = `${name} (${kilos} كيلو)`;
             }
 
-            const totalItemPrice = Math.round(singleBirdPrice * count);
-            
-            let displayName = `${name} (${count} طير - ${sizeText}${cleaningText})`;
             if (notes) displayName += `\n   📝 ملاحظة: ${notes}`;
 
             cart.push({name: displayName, price: totalItemPrice.toString(), img: img, category: category});
@@ -676,6 +810,63 @@
             msg += `\n✨ *طيور الفيومي - طعم بلدي ونظافة تضمن صحة عيلتك* ✨`;
             window.open(`https://wa.me/${WA_MAIN_NUMBER}?text=${encodeURIComponent(msg)}`);
         }
+
+        /* --- لوحة تحكم الأدمن --- */
+        function promptAdminPassword() {
+            const pass = prompt("🔐 أدخل كلمة سر الإدارة:");
+            if (pass === "200200") {
+                toggleAdminModal(true);
+                renderAdminControlList();
+            } else if (pass !== null) {
+                alert("❌ كلمة السر غير صحيحة!");
+            }
+        }
+
+        function toggleAdminModal(show) {
+            document.getElementById('adminModal').style.display = show ? 'flex' : 'none';
+        }
+
+        function renderAdminControlList() {
+            const adminListEl = document.getElementById('adminItemsList');
+            adminListEl.innerHTML = menuData.map(item => {
+                const itemKey = cleanItemKey(item.name);
+                const isAvailable = window.itemAvailability[itemKey] !== false;
+
+                return `
+                <div class="admin-item-row">
+                    <span class="admin-item-name">${item.name} (${item.category})</span>
+                    <label class="switch">
+                        <input type="checkbox" ${isAvailable ? 'checked' : ''} onchange="toggleItemStatus('${itemKey}', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleItemStatus(itemKey, status) {
+            if (window.db && window.dbRef && window.dbSet) {
+                const itemRef = window.dbRef(window.db, `availability/${itemKey}`);
+                window.dbSet(itemRef, status);
+            }
+        }
+
+        function setAllItemsAvailability(status) {
+            if (window.db && window.dbRef && window.dbSet) {
+                const updates = {};
+                menuData.forEach(item => {
+                    const itemKey = cleanItemKey(item.name);
+                    updates[itemKey] = status;
+                });
+                const refAll = window.dbRef(window.db, 'availability');
+                window.dbSet(refAll, updates);
+            }
+        }
+
+        window.promptAdminPassword = promptAdminPassword;
+        window.toggleAdminModal = toggleAdminModal;
+        window.renderAdminControlList = renderAdminControlList;
+        window.toggleItemStatus = toggleItemStatus;
+        window.setAllItemsAvailability = setAllItemsAvailability;
 
         function initPWA() {
             if ('serviceWorker' in navigator) {
