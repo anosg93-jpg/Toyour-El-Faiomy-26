@@ -10,7 +10,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="طيور الفيومي">
-    <link rel="apple-touch-icon" href="images/logotoyor.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/logotoyor.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/logotoyor.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/logotoyor.png">
+    <link rel="shortcut icon" href="images/logotoyor.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -517,14 +520,14 @@
         function getCleaningFee(item) {
             const name = item.name || '';
             if (name.includes('بط')) return 20;
-            if (name.includes('فرخ') || name.includes('فراخ') || name.includes('دجاج') || name.includes('أرنب') || name.includes('ارنب') || name.includes('رومي') || name.includes('حمام')) return 10;
+            if (name.includes('فرخ') || name.includes('فراخ') || name.includes('دجاج') || name.includes('أرنب') || name.includes('ارنب') || name.includes('أرانب') || name.includes('ارانب') || name.includes('رومي') || name.includes('حمام')) return 10;
             return 10;
         }
 
         function getItemTypeLabel(item) {
             const name = item.name || '';
             if (name.includes('بط')) return '⚖️ حجم كل بطة:';
-            if (name.includes('أرنب') || name.includes('ارنب')) return '⚖️ حجم كل أرنب:';
+            if (name.includes('أرنب') || name.includes('ارنب') || name.includes('أرانب') || name.includes('ارانب')) return '⚖️ حجم كل أرنب:';
             if (name.includes('حمام')) return '⚖️ حجم كل جوز:';
             if (name.includes('رومي')) return '⚖️ حجم كل ديك:';
             return '⚖️ حجم كل فرخة:';
