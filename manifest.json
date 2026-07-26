@@ -1,0 +1,21 @@
+{
+  "name": "طيور الفيومي",
+  "short_name": "طيور الفيومي",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f0ea",
+  "theme_color": "#8a151b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "images/logotoyor.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/logotoyor.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

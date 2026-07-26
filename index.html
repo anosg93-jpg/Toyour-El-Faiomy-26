@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طيور الفيومي | المنيو الرسمي</title>
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="طيور الفيومي">
+    <link rel="apple-touch-icon" href="images/logotoyor.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f4f0ea; 
+            --main-text: #2b1e1a; 
+            --desc-text: #66544e;
+            --accent: #8a151b;
+            --yellow-gold: #c69c52;
+            --white: #fbf9f5; 
+            --header-bg: #fbf9f5;
+            --card-bg: #fbf9f5;
+        }
+
+        body.dark-mode {
+            --bg: #140b0c; 
+            --main-text: #fbf9f5;
+            --desc-text: #c2b5b0;
+            --white: #211214;
+            --header-bg: #211214;
+            --card-bg: #211214;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; transition: background 0.3s, color 0.3s; }
+        body { background-color: var(--bg); color: var(--main-text); line-height: 1.6; overflow-x: hidden; padding-bottom: 70px; }
+
+        /* --- شاشة الترحيب --- */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--white); z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            transition: 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        .loader-content { text-align: center; }
+        .loader-logo-big {
+            width: 140px; height: 140px; border-radius: 50%;
+            margin-bottom: 15px; animation: pulse 1.5s infinite ease-in-out;
+            object-fit: cover; box-shadow: 0 10px 30px rgba(138, 21, 27, 0.2);
+            border: 3px solid var(--yellow-gold);
+        }
+        .loader-text { font-weight: 800; color: var(--accent); font-size: 1.8rem; margin-bottom: 6px; }
+        .loader-slogan { font-size: 0.95rem; color: var(--desc-text); font-weight: 700; }
+        .loading-bar { width: 180px; height: 6px; background: rgba(0,0,0,0.05); margin: 20px auto 10px auto; border-radius: 10px; overflow: hidden; position: relative; }
+        .loading-bar span { display: block; width: 0; height: 100%; background: var(--yellow-gold); animation: progress 3.8s linear forwards; }
+        
+        .creative-counter {
+            font-size: 0.9rem; font-weight: 800; color: var(--accent);
+            background: rgba(138, 21, 27, 0.08); padding: 4px 14px; border-radius: 20px;
+            display: inline-flex; align-items: center; gap: 4px;
+        }
+        .creative-counter span { color: var(--yellow-gold); }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes progress { from { width: 0; } to { width: 100%; } }
+        .splash-hidden { transform: translateY(-100%); pointer-events: none; }
+
+        /* --- الهيدر --- */
+        header { 
+            background: var(--header-bg); 
+            position: sticky; top: 0; z-index: 1001; 
+            box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+            display: flex; flex-direction: column; align-items: center; padding: 12px 0 8px 0;
+        }
+        .header-top { width: 100%; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 8px; }
+        .header-logo-container { 
+            width: 100px; height: 100px; border-radius: 50%; 
+            box-shadow: 0 4px 20px rgba(138, 21, 27, 0.15); 
+            overflow: hidden; border: 2.5px solid var(--yellow-gold);
+            background: var(--white);
+        }
+        .header-logo { width: 100%; height: 100%; object-fit: cover; }
+        
+        .theme-toggle { position: absolute; right: 20px; top: 0; width: 42px; height: 42px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; border: none; color: var(--main-text); }
+        .cart-trigger-container { position: absolute; left: 20px; top: 0; }
+        .cart-trigger { width: 42px; height: 42px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
+        .cart-trigger.shake { animation: cartShake 0.5s ease-in-out; }
+        @keyframes cartShake { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--yellow-gold); color: #2b1e1a; font-size: 10px; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; transform: scale(0); transition: 0.3s; }
+        .badge.show { transform: scale(1); }
+        
+        .header-bottom-addr { text-align: center; width: 100%; padding: 6px 15px 0 15px; border-top: 0.5px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.82rem; font-weight: 700; }
+        .addr-tag { color: var(--accent); font-weight: 800; }
+
+        /* --- شريط الأقسام --- */
+        .category-nav { 
+            display: flex; 
+            padding: 10px 15px; 
+            gap: 12px; 
+            overflow-x: auto; 
+            white-space: nowrap; 
+            scrollbar-width: none; 
+            background: var(--header-bg); 
+            position: sticky; 
+            top: 156px; 
+            z-index: 1000; 
+            border-bottom: 1px solid rgba(0,0,0,0.08); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            width: 100%;
+        }
+        .category-nav::-webkit-scrollbar { display: none; }
+        .category-nav.few-items { justify-content: space-around; }
+
+        .cat-item { display: flex; flex-direction: column; align-items: center; min-width: 75px; cursor: pointer; }
+        .cat-img-box { width: 55px; height: 55px; border-radius: 50%; background: #e5e5ea; overflow: hidden; border: 2px solid transparent; transition: 0.3s; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
+        .cat-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .cat-item.active .cat-img-box { border-color: var(--accent); transform: scale(1.06); box-shadow: 0 4px 12px rgba(138, 21, 27, 0.25); }
+        .cat-item span { font-size: 0.78rem; font-weight: 800; color: var(--desc-text); margin-top: 4px; }
+        .cat-item.active span { color: var(--accent); }
+
+        .menu-list { padding: 15px; max-width: 600px; margin: auto; }
+        
+        /* --- تصميم الكارت المطور --- */
+        .food-card { 
+            background: var(--card-bg); 
+            border-radius: 20px; 
+            margin-bottom: 18px; 
+            display: flex; 
+            flex-direction: column;
+            padding: 16px; 
+            gap: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04); 
+            border: 1px solid rgba(0,0,0,0.05); 
+        }
+        .food-card-top { display: flex; gap: 12px; align-items: flex-start; }
+        .item-img-box { width: 95px; height: 95px; border-radius: 16px; overflow: hidden; background: #e5e5ea; flex-shrink: 0; }
+        .item-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .food-info-top { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .food-name { font-weight: 800; font-size: 1.05rem; color: var(--main-text); }
+        .kilo-price-tag { font-size: 0.8rem; font-weight: 700; color: var(--desc-text); }
+        .food-price-total { font-weight: 800; color: var(--yellow-gold); font-size: 1.15rem; margin-top: 2px; }
+
+        .card-options-box {
+            background: rgba(0,0,0,0.025);
+            border-radius: 14px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .birds-count-row { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            background: rgba(138, 21, 27, 0.05); 
+            padding: 6px 12px; 
+            border-radius: 12px; 
+        }
+        .birds-count-label { font-size: 0.85rem; font-weight: 800; color: var(--main-text); }
+
+        .size-picker-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg);
+            padding: 6px 12px;
+            border-radius: 12px;
+        }
+        .size-picker-label {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--main-text);
+        }
+
+        .cleaning-checkbox-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.82rem; font-weight: 800; color: var(--accent); margin-top: 2px; }
+        .cleaning-checkbox-label input { accent-color: var(--accent); width: 16px; height: 16px; }
+
+        .qty-btns-group { display: flex; align-items: center; gap: 8px; }
+        .qty-btn { background: var(--accent); color: white; border: none; width: 28px; height: 28px; border-radius: 8px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .qty-val { font-weight: 800; font-size: 0.95rem; min-width: 24px; text-align: center; color: var(--main-text); }
+
+        .notes-input { width: 100%; background: var(--bg); border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 8px 12px; font-size: 0.8rem; font-weight: 700; color: var(--main-text); outline: none; }
+
+        .order-btn { background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 12px; font-size: 0.9rem; font-weight: 800; cursor: pointer; transition: 0.3s; width: 100%; text-align: center; }
+        .order-btn.added { background: var(--main-text); }
+
+        /* --- Footer --- */
+        .restaurant-footer { padding: 25px 20px; text-align: center; background: var(--white); border-top: 1px solid rgba(0,0,0,0.05); margin-top: 20px; }
+        .footer-branches-container { text-align: right; max-width: 450px; margin: 0 auto 20px auto; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 18px; }
+        .footer-branch-title { font-weight: 800; font-size: 0.95rem; color: var(--accent); }
+        .footer-branch-addr { font-size: 0.85rem; color: var(--main-text); margin: 4px 0 10px 0; font-weight: 700; }
+        .footer-phones-wrapper { display: flex; flex-wrap: wrap; gap: 8px; }
+        .footer-phone-call { display: inline-flex; align-items: center; gap: 5px; background: var(--accent); color: white !important; padding: 5px 12px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.82rem; }
+
+        .social-icons-box { display: flex; justify-content: center; gap: 15px; margin: 15px 0; }
+        .social-btn-link { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: transform 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .social-btn-link.fb-color { background: #1877F2; }
+        .social-btn-link.wa-color { background: #25D366; }
+        .social-btn-link svg { width: 22px; height: 22px; fill: white; }
+
+        .footer-rights { font-size: 0.78rem; color: var(--main-text); font-weight: 700; margin-bottom: 4px; }
+        .dev-credit { font-size: 0.82rem; color: var(--desc-text); font-weight: 700; }
+        .dev-credit a { color: var(--accent); text-decoration: none; display: block; }
+
+        /* مودال السلة */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: none; justify-content: center; align-items: flex-end; }
+        .modal-content { background: var(--white); width: 100%; max-width: 500px; padding: 22px; border-radius: 25px 25px 0 0; max-height: 90vh; overflow-y: auto; color: var(--main-text); }
+        .cart-item-card { display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(0,0,0,0.04); border-radius: 16px; margin-bottom: 8px; }
+        .cart-item-img { width: 45px; height: 45px; border-radius: 10px; object-fit: cover; }
+        .cart-item-info { flex: 1; }
+        .cart-item-name { font-weight: 700; font-size: 0.85rem; color: var(--main-text); white-space: pre-line; }
+        .cart-item-price { color: var(--yellow-gold); font-weight: 800; font-size: 0.82rem; display: block; }
+        .remove-btn { color: #ff3b30; font-weight: 800; font-size: 0.75rem; cursor: pointer; }
+
+        .section-title-cart { font-size: 0.85rem; font-weight: 800; color: var(--accent); margin: 10px 0 5px 0; }
+        .order-type-container, .payment-type-container { display: flex; background: rgba(0,0,0,0.04); padding: 4px; border-radius: 14px; margin-bottom: 8px; gap: 4px; }
+        .order-type-btn, .pay-type-btn, .wallet-type-btn { flex: 1; border: none; background: transparent; padding: 9px; border-radius: 10px; font-weight: 800; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; color: var(--desc-text); transition: 0.3s; }
+        .order-type-btn.active, .pay-type-btn.active, .wallet-type-btn.active { background: var(--accent); color: white; }
+
+        .wallet-options-wrapper { display: none; background: rgba(138, 21, 27, 0.05); padding: 8px; border-radius: 14px; border: 1px solid rgba(138, 21, 27, 0.12); margin-bottom: 10px; }
+        .wallet-info-text { font-size: 0.78rem; font-weight: 700; color: var(--accent); text-align: center; margin-top: 4px; }
+
+        .user-fields input { background: var(--bg); border: none; padding: 12px; border-radius: 12px; width: 100%; margin-bottom: 8px; color: var(--main-text); text-align: right; font-weight: 700; outline: none; }
+        .submit-btn { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 16px; width: 100%; font-weight: 800; cursor: pointer; font-size: 0.95rem; }
+
+        /* شريط التثبيت */
+        #install-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--accent); color: white; padding: 12px 18px; display: none; justify-content: space-between; align-items: center; z-index: 1500; border-radius: 18px 18px 0 0; }
+        .install-btn { background: var(--yellow-gold); color: #2b1e1a; border: none; padding: 6px 15px; border-radius: 10px; font-weight: 800; font-size: 0.8rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <div class="loader-content">
+            <img src="images/logotoyor.png" class="loader-logo-big" onerror="this.src='https://via.placeholder.com/140'">
+            <h2 class="loader-text">طيور الفيومي</h2>
+            <p class="loader-slogan">طعم بلدي ونظافة تضمن صحة عيلتك 🍗✨</p>
+            <div class="loading-bar"><span></span></div>
+            <div class="creative-counter">جاري تحضير المنيو... <span id="loadPercentage">0</span>%</div>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-top">
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+            <div class="header-logo-container">
+                <img src="images/logotoyor.png" class="header-logo" onerror="this.src='https://via.placeholder.com/100'">
+            </div>
+            <div class="cart-trigger-container">
+                <div class="cart-trigger" onclick="toggleCart(true)" id="cartBtn">
+                    <span class="badge" id="cartBadge">0</span>
+                    <span style="font-size: 1.2rem;">🛒</span>
+                </div>
+            </div>
+        </div>
+        <div class="header-bottom-addr">
+            <span class="addr-tag">📍 العنوان:</span>
+            <span>مدينة السادات - مول سايلو بلازا</span>
+        </div>
+    </header>
+
+    <div class="category-nav" id="catNav"></div>
+    <div id="menuList" class="menu-list"></div>
+
+    <div id="install-bar">
+        <span style="font-size:0.85rem; font-weight:700;">📱 تثبيت تطبيق طيور الفيومي</span>
+        <button class="install-btn" onclick="triggerInstall()">تثبيت</button>
+    </div>
+
+    <footer class="restaurant-footer">
+        <div class="footer-branches-container">
+            <div class="footer-branch-title">📌 طيور الفيومي</div>
+            <p class="footer-branch-addr">مدينة السادات - مول سايلو بلازا</p>
+            <div class="footer-phones-wrapper">
+                <a href="tel:0106808802" class="footer-phone-call">📞 0106808802</a>
+                <a href="tel:01017716880" class="footer-phone-call">📞 01017716880</a>
+            </div>
+        </div>
+
+        <div class="social-icons-box">
+            <a href="https://www.facebook.com/share/18i7LizJVp/" target="_blank" class="social-btn-link fb-color" title="فيسبوك">
+                <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+            <a href="https://wa.me/20106808802" target="_blank" class="social-btn-link wa-color" title="واتساب">
+                <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.963C16.528 2.022 14.056.996 11.43.996c-5.442 0-9.87 4.372-9.874 9.799-.001 1.742.483 3.442 1.398 4.914l-.995 3.637 3.737-.971zm10.873-6.53c-.293-.146-1.734-.852-2.001-.95-.267-.099-.463-.146-.659.146-.195.293-.759.95-.93 1.146-.171.195-.341.219-.634.073-.293-.146-1.239-.456-2.361-1.456-.872-.777-1.46-1.738-1.632-2.031-.171-.293-.018-.452.129-.597.132-.131.293-.341.44-.512.146-.171.195-.293.293-.488.098-.195.049-.366-.024-.512-.074-.146-.659-1.586-.902-2.17-.238-.574-.479-.496-.659-.506-.171-.008-.366-.01-.562-.01-.195 0-.513.073-.781.366-.269.293-1.025 1.001-1.025 2.441 0 1.439 1.049 2.83 1.196 3.025.146.195 2.064 3.15 5.003 4.415.699.301 1.244.482 1.67.618.703.223 1.344.192 1.85.117.564-.083 1.734-.707 1.978-1.39.244-.683.244-1.269.171-1.39-.073-.122-.269-.195-.562-.342z"/></svg>
+            </a>
+        </div>
+
+        <p class="footer-rights">جميع الحقوق محفوظة لـ طيور الفيومي 2026 ©</p>
+        <div class="dev-credit">
+            Designed by eng / Anas Gaber shehata
+            <a href="tel:01003800314">📞 01003800314</a>
+        </div>
+    </footer>
+
+    <!-- مودال السلة -->
+    <div class="modal" id="cartModal" onclick="if(event.target==this) toggleCart(false)">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 12px; color: var(--accent);">🛒 سلة الطلبات</h2>
+            <div id="cartItemsList"></div>
+            
+            <div style="margin: 12px 0 8px 0; padding: 10px 14px; background: rgba(138, 21, 27, 0.08); border-radius: 16px; display: flex; flex-direction: column; gap: 3px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <b>إجمالي الطلبات التقريبي:</b>
+                    <b id="totalAmount" style="color: var(--accent); font-size: 1.05rem;">0 ج.م</b>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--yellow-gold); font-weight: 800; text-align: left;">
+                    * الحساب الفعلي يحدده الكاشير بعد الوزن الدقيق + تكلفة التوصيل 🛵
+                </div>
+            </div>
+
+            <div class="section-title-cart">🛵 نوع الاستلام:</div>
+            <div class="order-type-container">
+                <button type="button" class="order-type-btn active" id="deliveryBtn" onclick="setOrderType('delivery')">🛵 دليفري</button>
+                <button type="button" class="order-type-btn" id="takeawayBtn" onclick="setOrderType('takeaway')">🛍️ تيك اواي</button>
+            </div>
+
+            <div class="section-title-cart">💳 طريقة الدفع:</div>
+            <div class="payment-type-container">
+                <button type="button" class="pay-type-btn active" id="payCashBtn" onclick="setPaymentType('cash')">💵 نقدياً (عند الاستلام)</button>
+                <button type="button" class="pay-type-btn" id="payWalletBtn" onclick="setPaymentType('wallet')">📱 كاش إلكتروني</button>
+            </div>
+
+            <div class="wallet-options-wrapper" id="walletWrapper">
+                <div style="display: flex; gap: 5px;">
+                    <button type="button" class="wallet-type-btn active" id="vodaBtn" onclick="setWalletType('vodafone')">🔴 فودافون كاش</button>
+                    <button type="button" class="wallet-type-btn" id="instaBtn" onclick="setWalletType('insta')">🟣 انستا باي</button>
+                </div>
+                <div class="wallet-info-text" id="walletNumNotice">رقم محفظة فودافون كاش: <b>0106808802</b></div>
+            </div>
+
+            <div class="user-fields">
+                <input type="text" id="uName" placeholder="الاسم بالكامل">
+                <input type="tel" id="uPhone" placeholder="رقم الموبايل">
+                <input type="text" id="uAddr" placeholder="العنوان بالتفصيل">
+            </div>
+            <button class="submit-btn" onclick="sendToWA()">تأكيد وإرسال الطلب عبر الواتساب 💬</button>
+        </div>
+    </div>
+
+    <script>
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvU4LlOdi2STw-gtPKw9xc76tuRsujkFV6tTdPd2cLpLGSUoC4X4bmgAoY0QcKfKACbSKINa8WtIG7/pub?output=csv';
+        const IMAGES_PATH = "./images/"; 
+        let menuData = [], cart = [];
+        let currentTotal = 0; 
+        let deferredPrompt;
+        
+        let birdCounts = {}; 
+
+        const sizeOptions = [
+            { val: 1.0, text: "1.0 كيلو" },
+            { val: 1.5, text: "1.5 كيلو" },
+            { val: 2.0, text: "2.0 كيلو" },
+            { val: 2.5, text: "2.5 كيلو" },
+            { val: 3.0, text: "3.0 كيلو" },
+            { val: 3.5, text: "3.5 كيلو" },
+            { val: 4.0, text: "4.0 كيلو" },
+            { val: 4.5, text: "4.5 كيلو" },
+            { val: 5.0, text: "5.0 كيلو" }
+        ];
+
+        let selectedSizes = {};
+
+        let selectedOrderType = 'delivery';
+        let selectedPaymentType = 'cash';
+        let selectedWalletType = 'vodafone';
+
+        const NUM_VODAFONE = '0106808802';
+        const NUM_INSTAPAY = '01017716880';
+        const WA_MAIN_NUMBER = '20106808802';
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            document.getElementById('themeBtn').innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
+
+        function startCreativeCounter() {
+            const counterEl = document.getElementById('loadPercentage');
+            let count = 0;
+            const timer = setInterval(() => {
+                count++;
+                if (count <= 100) counterEl.innerText = count;
+                else clearInterval(timer);
+            }, 35);
+        }
+
+        async function loadMenu() {
+            startCreativeCounter();
+
+            try {
+                const cacheBuster = `&t=${new Date().getTime()}`;
+                const response = await fetch(csvUrl + cacheBuster, { cache: 'no-store' });
+                const data = await response.text();
+                const rows = data.split('\n').slice(1);
+                
+                menuData = rows.map(row => {
+                    const col = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+                    return { 
+                        category: col[0], 
+                        name: col[1], 
+                        price: col[2],
+                        img: `${IMAGES_PATH}${col[1]}.jpg` 
+                    };
+                }).filter(i => i.name && i.category);
+                
+                renderNav();
+
+                setTimeout(() => {
+                    document.getElementById('splash-screen').classList.add('splash-hidden');
+                    initPWA(); 
+                }, 3800);
+
+            } catch (e) { 
+                setTimeout(() => document.getElementById('splash-screen').classList.add('splash-hidden'), 3800);
+            }
+        }
+
+        function renderNav() {
+            const uniqueCats = [...new Set(menuData.map(item => item.category))];
+            const catNavEl = document.getElementById('catNav');
+            
+            if (uniqueCats.length <= 3) catNavEl.classList.add('few-items');
+            else catNavEl.classList.remove('few-items');
+
+            catNavEl.innerHTML = uniqueCats.map((cat, idx) => `
+                <div class="cat-item ${idx === 0 ? 'active' : ''}" onclick="filterCat('${cat}', this)">
+                    <div class="cat-img-box"><img src="${IMAGES_PATH}${cat}.jpg" onerror="this.src='${IMAGES_PATH}default.jpg'"></div>
+                    <span>${cat}</span>
+                </div>
+            `).join('');
+            
+            if (uniqueCats.length > 0) filterCat(uniqueCats[0]);
+        }
+
+        function getCleaningFee(item) {
+            const name = item.name || '';
+            const cat = item.category || '';
+            if (name.includes('بط') || cat.includes('بط')) return 20;
+            if (name.includes('فرخ') || name.includes('فراخ') || name.includes('دجاج') || name.includes('أرنب') || cat.includes('طيور') || cat.includes('فراخ')) return 10;
+            return 0;
+        }
+
+        function getItemTypeLabel(item) {
+            const name = item.name || '';
+            const cat = item.category || '';
+            if (name.includes('بط') || cat.includes('بط')) return '⚖️ حجم كل بطة:';
+            if (name.includes('أرنب') || cat.includes('أرنب')) return '⚖️ حجم كل أرنب:';
+            if (name.includes('حمام') || cat.includes('حمام')) return '⚖️ حجم كل جوز:';
+            if (name.includes('رومي') || cat.includes('رومي')) return '⚖️ حجم كل ديك:';
+            return '⚖️ حجم كل فرخة:';
+        }
+
+        function filterCat(cat, el) {
+            if(el) { document.querySelectorAll('.cat-item').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
+            
+            const filteredItems = menuData.filter(i => i.category === cat);
+
+            document.getElementById('menuList').innerHTML = filteredItems.map((item, index) => {
+                const cleanFee = getCleaningFee(item);
+                const hasCleaning = cleanFee > 0;
+                const kiloPrice = parseFloat(item.price) || 0;
+                const cardKey = `${cat}_${index}`;
+                const sizeLabelText = getItemTypeLabel(item);
+                
+                birdCounts[cardKey] = birdCounts[cardKey] || 1; 
+                selectedSizes[cardKey] = selectedSizes[cardKey] || sizeOptions[2]; // الافتراضي 2.0 كيلو
+
+                return `
+                <div class="food-card">
+                    <div class="food-card-top">
+                        <div class="item-img-box"><img src="${item.img}" onerror="this.src='${IMAGES_PATH}default.jpg'"></div>
+                        <div class="food-info-top">
+                            <div class="food-name">${item.name}</div>
+                            <div class="kilo-price-tag">📌 سعر الكيلو: <b>${kiloPrice} ج.م</b></div>
+                            <div class="food-price-total" id="card_price_${cardKey}">${Math.round(kiloPrice * selectedSizes[cardKey].val * birdCounts[cardKey])} ج.م</div>
+                        </div>
+                    </div>
+
+                    <div class="card-options-box">
+                        <!-- 1. عدد الطيور المطلوب أصبح في الأول -->
+                        <div class="birds-count-row">
+                            <span class="birds-count-label">🐓 عدد الطيور المطلوب:</span>
+                            <div class="qty-btns-group">
+                                <button class="qty-btn" onclick="changeBirdCount('${cardKey}', -1, ${kiloPrice})">-</button>
+                                <span class="qty-val" id="birds_num_${cardKey}">${birdCounts[cardKey]}</span>
+                                <button class="qty-btn" onclick="changeBirdCount('${cardKey}', 1, ${kiloPrice})">+</button>
+                            </div>
+                        </div>
+
+                        <!-- 2. حجم كل فرخة/بطة أصبح أسفله مباشرة -->
+                        <div class="size-picker-container">
+                            <span class="size-picker-label">${sizeLabelText}</span>
+                            <div class="qty-btns-group">
+                                <button class="qty-btn" onclick="changeSizeStep('${cardKey}', -1, ${kiloPrice})">-</button>
+                                <span class="qty-val" style="min-width: 65px;" id="size_val_text_${cardKey}">${selectedSizes[cardKey].text}</span>
+                                <button class="qty-btn" onclick="changeSizeStep('${cardKey}', 1, ${kiloPrice})">+</button>
+                            </div>
+                        </div>
+
+                        ${hasCleaning ? `
+                            <div class="option-row" style="display:flex; justify-content:space-between; align-items:center;">
+                                <label class="cleaning-checkbox-label">
+                                    <input type="checkbox" id="clean_chk_${cardKey}" data-fee="${cleanFee}" onchange="updateCardPrice('${cardKey}', ${kiloPrice})">
+                                    <span>خدمة تنظيف (+${cleanFee}ج للطير)</span>
+                                </label>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <input type="text" class="notes-input" id="notes_${cardKey}" placeholder="✍️ أي ملاحظة؟ (مثال: تقطيع 8 قطع، بدون جلد...)">
+
+                    <button class="order-btn" onclick="addToCart(event, this, '${item.name}', ${kiloPrice}, '${item.img}', '${item.category}', '${cardKey}')">اطلب الآن 🛒</button>
+                </div>`;
+            }).join('');
+        }
+
+        function changeSizeStep(cardKey, delta, kiloPrice) {
+            let currentIdx = sizeOptions.findIndex(o => o.val === selectedSizes[cardKey].val);
+            if (currentIdx === -1) currentIdx = 2; 
+            let newIdx = currentIdx + delta;
+            
+            if (newIdx >= 0 && newIdx < sizeOptions.length) {
+                selectedSizes[cardKey] = sizeOptions[newIdx];
+                const displayEl = document.getElementById(`size_val_text_${cardKey}`);
+                if (displayEl) displayEl.innerText = selectedSizes[cardKey].text;
+                updateCardPrice(cardKey, kiloPrice);
+            }
+        }
+
+        function changeBirdCount(cardKey, delta, kiloPrice) {
+            birdCounts[cardKey] = Math.max(1, (birdCounts[cardKey] || 1) + delta);
+            document.getElementById(`birds_num_${cardKey}`).innerText = birdCounts[cardKey];
+            updateCardPrice(cardKey, kiloPrice);
+        }
+
+        function updateCardPrice(cardKey, kiloPrice) {
+            const priceEl = document.getElementById(`card_price_${cardKey}`);
+            if(!priceEl) return;
+
+            const count = birdCounts[cardKey] || 1;
+            const sizeObj = selectedSizes[cardKey] || sizeOptions[2];
+            const sizeWeight = sizeObj.val;
+            const chk = document.getElementById(`clean_chk_${cardKey}`);
+
+            let singleBirdPrice = kiloPrice * sizeWeight;
+            if (chk && chk.checked) {
+                const cleanFee = parseFloat(chk.dataset.fee) || 0;
+                singleBirdPrice += cleanFee;
+            }
+
+            const total = singleBirdPrice * count;
+            priceEl.innerText = `${Math.round(total)} ج.م`;
+        }
+
+        function addToCart(e, btn, name, kiloPrice, img, category, cardKey) {
+            const count = birdCounts[cardKey] || 1;
+            const sizeObj = selectedSizes[cardKey] || sizeOptions[2];
+            const sizeText = sizeObj.text;
+            const sizeWeight = sizeObj.val;
+            
+            const chk = document.getElementById(`clean_chk_${cardKey}`);
+            const notesInput = document.getElementById(`notes_${cardKey}`);
+            const notes = notesInput ? notesInput.value.trim() : '';
+
+            let singleBirdPrice = kiloPrice * sizeWeight;
+            let cleaningText = "";
+
+            if (chk && chk.checked) {
+                const cleanFee = parseFloat(chk.dataset.fee) || 0;
+                singleBirdPrice += cleanFee;
+                cleaningText = " + تنظيف";
+            }
+
+            const totalItemPrice = Math.round(singleBirdPrice * count);
+            
+            let displayName = `${name} (${count} طير - ${sizeText}${cleaningText})`;
+            if (notes) displayName += `\n   📝 ملاحظة: ${notes}`;
+
+            cart.push({name: displayName, price: totalItemPrice.toString(), img: img, category: category});
+            
+            btn.innerText = 'تمت الإضافة للسلة ✔️'; btn.classList.add('added');
+            setTimeout(() => { btn.innerText = 'اطلب الآن 🛒'; btn.classList.remove('added'); }, 2000);
+            
+            updateCart();
+            const cartBtn = document.getElementById('cartBtn');
+            cartBtn.classList.add('shake');
+            setTimeout(() => cartBtn.classList.remove('shake'), 500);
+        }
+
+        function updateCart() {
+            const badge = document.getElementById('cartBadge'); 
+            badge.innerText = cart.length; 
+            badge.classList.toggle('show', cart.length > 0); 
+            
+            currentTotal = 0;
+            document.getElementById('cartItemsList').innerHTML = cart.map((item, idx) => {
+                currentTotal += parseFloat(item.price) || 0;
+                return `<div class="cart-item-card">
+                    <img src="${item.img}" class="cart-item-img" onerror="this.src='${IMAGES_PATH}default.jpg'">
+                    <div class="cart-item-info">
+                        <span class="cart-item-name">${item.name}</span>
+                        <span class="cart-item-price">${item.price} ج.م</span>
+                    </div>
+                    <span class="remove-btn" onclick="removeFromCart(${idx})">حذف</span>
+                </div>`;
+            }).join('');
+            document.getElementById('totalAmount').innerText = `${currentTotal} ج.م`;
+        }
+
+        function removeFromCart(idx) { cart.splice(idx, 1); updateCart(); if(cart.length === 0) toggleCart(false); }
+        
+        function toggleCart(s) { 
+            const modal = document.getElementById('cartModal'); 
+            if (s) { 
+                modal.style.display = 'flex'; 
+                history.pushState({ cartOpen: true }, ""); 
+            } else { 
+                modal.style.display = 'none'; 
+            } 
+        }
+
+        window.addEventListener('popstate', function () { 
+            const modal = document.getElementById('cartModal'); 
+            if (modal.style.display === 'flex') modal.style.display = 'none'; 
+        });
+
+        function setOrderType(type) {
+            selectedOrderType = type;
+            document.getElementById('deliveryBtn').classList.toggle('active', type === 'delivery');
+            document.getElementById('takeawayBtn').classList.toggle('active', type === 'takeaway');
+            document.getElementById('uAddr').style.display = type === 'delivery' ? 'block' : 'none';
+        }
+
+        function setPaymentType(type) {
+            selectedPaymentType = type;
+            document.getElementById('payCashBtn').classList.toggle('active', type === 'cash');
+            document.getElementById('payWalletBtn').classList.toggle('active', type === 'wallet');
+            document.getElementById('walletWrapper').style.display = type === 'wallet' ? 'block' : 'none';
+        }
+
+        function setWalletType(wType) {
+            selectedWalletType = wType;
+            document.getElementById('vodaBtn').classList.toggle('active', wType === 'vodafone');
+            document.getElementById('instaBtn').classList.toggle('active', wType === 'insta');
+            const notice = document.getElementById('walletNumNotice');
+            notice.innerHTML = wType === 'vodafone' ? `رقم محفظة فودافون كاش: <b>${NUM_VODAFONE}</b>` : `رقم انستا باي: <b>${NUM_INSTAPAY}</b>`;
+        }
+
+        function sendToWA() {
+            const n = document.getElementById('uName').value.trim(), p = document.getElementById('uPhone').value.trim(), a = document.getElementById('uAddr').value.trim();
+            if (!n || !p || cart.length === 0) return alert("يرجى إكمال البيانات واختيار الأصناف من السلة");
+            if (selectedOrderType === 'delivery' && !a) return alert("يرجى إدخال عنوان التوصيل بالتفصيل");
+
+            const typeLabel = selectedOrderType === 'delivery' ? '🛵 دليفري' : '🛍️ تيك اواي';
+            
+            let msg = `🔴 *أوردر جديد - طيور الفيومي* 🔴\n\n`;
+            msg += `👤 *الاسم:* ${n}\n📱 *الموبايل:* ${p}\n🛵 *الاستلام:* ${typeLabel}\n`;
+            if (selectedOrderType === 'delivery') msg += `📍 *العنوان:* ${a}\n`;
+            msg += `\n-----------------------------------\n📋 *تفاصيل الطلبات:*\n`;
+            msg += cart.map((i, index) => `${index + 1}. ${i.name} -> (*${i.price} ج.م*)`).join('\n\n') + `\n-----------------------------------\n\n`;
+            
+            msg += `💵 *إجمالي سعر الطلب (تقريبي):* *${currentTotal} ج.م*\n📌 *ملاحظة:* (السعر النهائي بعد الوزن بفرق بسيط + التوصيل)\n\n`;
+            msg += `💳 *طريقة الدفع:*\n`;
+            if (selectedPaymentType === 'cash') {
+                msg += `• نقدياً عند الاستلام 💵\n`;
+            } else {
+                const wName = selectedWalletType === 'vodafone' ? 'فودافون كاش 🔴' : 'انستا باي 🟣';
+                const wNum = selectedWalletType === 'vodafone' ? NUM_VODAFONE : NUM_INSTAPAY;
+                msg += `• كاش إلكتروني (${wName})\n• رقم المحفظة: *${wNum}*\n\n`;
+                msg += `⚠️ *يرجى تحويل نصف المبلغ الإجمالي لـ (${Math.round(currentTotal / 2)} ج.م) على الرقم (${wNum}) لتجهيز الأوردر.* ⚠️\n`;
+            }
+
+            msg += `\n✨ *طيور الفيومي - طعم بلدي ونظافة تضمن صحة عيلتك* ✨`;
+            window.open(`https://wa.me/${WA_MAIN_NUMBER}?text=${encodeURIComponent(msg)}`);
+        }
+
+        function initPWA() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    reg.onupdatefound = () => {
+                        const installingWorker = reg.installing;
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                window.location.reload(); 
+                            }
+                        };
+                    };
+                });
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e;
+            document.getElementById('install-bar').style.display = 'flex';
+        });
+
+        function triggerInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    document.getElementById('install-bar').style.display = 'none';
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        loadMenu();
+    </script>
+</body>
+</html>
