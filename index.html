@@ -181,7 +181,7 @@
 
         .qty-btns-group { display: flex; align-items: center; gap: 8px; }
         .qty-btn { background: var(--accent); color: white; border: none; width: 28px; height: 28px; border-radius: 8px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .qty-val { font-weight: 800; font-size: 0.95rem; width: 70px; text-align: center; color: var(--main-text); display: inline-block; }
+        .qty-val { font-weight: 800; font-size: 0.95rem; width: 75px; text-align: center; color: var(--main-text); display: inline-block; }
 
         .notes-input { width: 100%; background: var(--bg); border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 8px 12px; font-size: 0.8rem; font-weight: 700; color: var(--main-text); outline: none; }
 
@@ -252,7 +252,7 @@
         .btn-enable-all { background: #25D366; color: white; }
         .btn-disable-all { background: #ff3b30; color: white; }
 
-        /* --- تصميم الكروت المنقح والمنسق بامتياز للإدارة --- */
+        /* --- تصميم الكروت المنقح والمنسق للإدارة --- */
         .admin-order-card { 
             background: var(--bg); 
             border: 1px solid rgba(138, 21, 27, 0.15); 
@@ -524,7 +524,7 @@
         window.savedOrdersData = {};
         window.currentSelectedCategory = "";
         window.currentAdminTab = 'items';
-        let pendingOrderData = null; // تخزين مؤقت للطلب قبل التأكيد
+        let pendingOrderData = null; 
 
         const sizeOptions = [
             { val: 1.0, text: "1.0 كيلو" },
@@ -616,6 +616,12 @@
             return cat.includes('طيور') || cat.includes('طيور طازجة');
         }
 
+        function isProcessedCategory(item) {
+            const cat = item.category || '';
+            const name = item.name || '';
+            return cat.includes('مصنوعات') || cat.includes('المصنوعات') || name.includes('بانيه');
+        }
+
         function getCleaningFee(item) {
             const name = item.name || '';
             if (name.includes('بط')) return 20;
@@ -636,6 +642,11 @@
             return name.replace(/[.#$/\[\]]/g, "_");
         }
 
+        function formatKiloDisplay(val) {
+            if (val === 0.5) return 'نص كيلو';
+            return `${val} كيلو`;
+        }
+
         function filterCat(cat, el) {
             window.currentSelectedCategory = cat;
             if(el) { document.querySelectorAll('.cat-item').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
@@ -648,6 +659,7 @@
                 const itemKey = cleanItemKey(item.name);
                 const isAvailable = window.itemAvailability[itemKey] !== false;
                 const isBird = isBirdsCategory(item);
+                const isProcessed = isProcessedCategory(item);
 
                 if (isBird) {
                     const cleanFee = getCleaningFee(item);
@@ -696,12 +708,17 @@
 
                         <input type="text" class="notes-input" ${!isAvailable ? 'disabled' : ''} id="notes_${cardKey}" placeholder="✍️ أي ملاحظة؟ (مثال: تقطيع 8 قطع، بدون جلد...)">
 
-                        <button class="order-btn" ${!isAvailable ? 'disabled' : ''} onclick="addToCart(event, this, '${item.name}', ${kiloPrice}, '${item.img}', '${item.category}', '${cardKey}', true)">
+                        <button class="order-btn" ${!isAvailable ? 'disabled' : ''} onclick="addToCart(event, this, '${item.name}', ${kiloPrice}, '${item.img}', '${item.category}', '${cardKey}', true, false)">
                             ${isAvailable ? 'اطلب الآن 🛒' : 'غير متوفر حالياً 🚫'}
                         </button>
                     </div>`;
                 } else {
-                    generalKiloCounts[cardKey] = generalKiloCounts[cardKey] || 1;
+                    // إعداد القيمة الافتراضية للوزن (للمصنوعات تبدأ من 1.0 كيلو)
+                    if (generalKiloCounts[cardKey] === undefined) {
+                        generalKiloCounts[cardKey] = 1.0;
+                    }
+
+                    const currentVal = generalKiloCounts[cardKey];
 
                     return `
                     <div class="food-card ${isAvailable ? '' : 'unavailable'}">
@@ -710,7 +727,7 @@
                             <div class="food-info-top">
                                 <div class="food-name">${item.name}</div>
                                 <div class="kilo-price-tag">📌 سعر الكيلو: <b>${kiloPrice} ج.م</b></div>
-                                <div class="food-price-total" id="card_price_${cardKey}">${Math.round(kiloPrice * generalKiloCounts[cardKey])} ج.م</div>
+                                <div class="food-price-total" id="card_price_${cardKey}">${Math.round(kiloPrice * currentVal)} ج.م</div>
                             </div>
                         </div>
 
@@ -718,16 +735,16 @@
                             <div class="option-control-row">
                                 <span class="option-control-label">⚖️ الوزن المطلوب:</span>
                                 <div class="qty-btns-group">
-                                    <button class="qty-btn" ${!isAvailable ? 'disabled' : ''} onclick="changeGeneralKilo('${cardKey}', -1, ${kiloPrice})">-</button>
-                                    <span class="qty-val" id="gen_kilo_${cardKey}">${generalKiloCounts[cardKey]} كيلو</span>
-                                    <button class="qty-btn" ${!isAvailable ? 'disabled' : ''} onclick="changeGeneralKilo('${cardKey}', 1, ${kiloPrice})">+</button>
+                                    <button class="qty-btn" ${!isAvailable ? 'disabled' : ''} onclick="changeGeneralKilo('${cardKey}', -1, ${kiloPrice}, ${isProcessed})">-</button>
+                                    <span class="qty-val" id="gen_kilo_${cardKey}">${formatKiloDisplay(currentVal)}</span>
+                                    <button class="qty-btn" ${!isAvailable ? 'disabled' : ''} onclick="changeGeneralKilo('${cardKey}', 1, ${kiloPrice}, ${isProcessed})">+</button>
                                 </div>
                             </div>
                         </div>
 
                         <input type="text" class="notes-input" ${!isAvailable ? 'disabled' : ''} id="notes_${cardKey}" placeholder="✍️ أي ملاحظات إضافية؟">
 
-                        <button class="order-btn" ${!isAvailable ? 'disabled' : ''} onclick="addToCart(event, this, '${item.name}', ${kiloPrice}, '${item.img}', '${item.category}', '${cardKey}', false)">
+                        <button class="order-btn" ${!isAvailable ? 'disabled' : ''} onclick="addToCart(event, this, '${item.name}', ${kiloPrice}, '${item.img}', '${item.category}', '${cardKey}', false, ${isProcessed})">
                             ${isAvailable ? 'اطلب الآن 🛒' : 'غير متوفر حالياً 🚫'}
                         </button>
                     </div>`;
@@ -756,11 +773,25 @@
             updateCardPrice(cardKey, kiloPrice);
         }
 
-        function changeGeneralKilo(cardKey, delta, kiloPrice) {
-            generalKiloCounts[cardKey] = Math.max(1, (generalKiloCounts[cardKey] || 1) + delta);
-            document.getElementById(`gen_kilo_${cardKey}`).innerText = `${generalKiloCounts[cardKey]} كيلو`;
-            const priceEl = document.getElementById(`card_price_${cardKey}`);
-            if (priceEl) priceEl.innerText = `${Math.round(kiloPrice * generalKiloCounts[cardKey])} ج.م`;
+        function changeGeneralKilo(cardKey, delta, kiloPrice, isProcessed) {
+            if (isProcessed) {
+                let currentVal = generalKiloCounts[cardKey] !== undefined ? generalKiloCounts[cardKey] : 1.0;
+                let step = 0.5;
+                let newVal = currentVal + (delta * step);
+                if (newVal < 0.5) newVal = 0.5; // لا يقل عن نص كيلو
+
+                generalKiloCounts[cardKey] = newVal;
+                document.getElementById(`gen_kilo_${cardKey}`).innerText = formatKiloDisplay(newVal);
+                const priceEl = document.getElementById(`card_price_${cardKey}`);
+                if (priceEl) priceEl.innerText = `${Math.round(kiloPrice * newVal)} ج.م`;
+            } else {
+                let currentVal = generalKiloCounts[cardKey] !== undefined ? generalKiloCounts[cardKey] : 1.0;
+                let newVal = Math.max(1, currentVal + delta);
+                generalKiloCounts[cardKey] = newVal;
+                document.getElementById(`gen_kilo_${cardKey}`).innerText = `${newVal} كيلو`;
+                const priceEl = document.getElementById(`card_price_${cardKey}`);
+                if (priceEl) priceEl.innerText = `${Math.round(kiloPrice * newVal)} ج.م`;
+            }
         }
 
         function updateCardPrice(cardKey, kiloPrice) {
@@ -782,7 +813,7 @@
             priceEl.innerText = `${Math.round(total)} ج.م`;
         }
 
-        function addToCart(e, btn, name, kiloPrice, img, category, cardKey, isBird) {
+        function addToCart(e, btn, name, kiloPrice, img, category, cardKey, isBird, isProcessed) {
             const notesInput = document.getElementById(`notes_${cardKey}`);
             const notes = notesInput ? notesInput.value.trim() : '';
             let totalItemPrice = 0;
@@ -808,9 +839,10 @@
                 totalItemPrice = Math.round(singleBirdPrice * count);
                 displayName = `${name} (${count} طير - ${sizeText}${cleaningText})`;
             } else {
-                const kilos = generalKiloCounts[cardKey] || 1;
+                const kilos = generalKiloCounts[cardKey] !== undefined ? generalKiloCounts[cardKey] : 1.0;
                 totalItemPrice = Math.round(kiloPrice * kilos);
-                displayName = `${name} (${kilos} كيلو)`;
+                const kiloText = formatKiloDisplay(kilos);
+                displayName = `${name} (${kiloText})`;
             }
 
             if (notes) displayName += `\n   📝 ملاحظة: ${notes}`;
@@ -914,7 +946,6 @@
             const now = new Date();
             const timeString = now.toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
 
-            // تجهيز بيانات الطلب مؤقتاً لحين تأكيد العميل أنه أرسله للواتساب
             pendingOrderData = {
                 customerName: n,
                 phone: p,
@@ -927,11 +958,9 @@
                 createdAt: Date.now()
             };
 
-            // إغلاق مودال السلة وفتح الواتساب
             toggleCart(false);
             window.open(`https://wa.me/${WA_MAIN_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 
-            // إظهار نافذة تأكيد الإرسال للعميل
             setTimeout(() => {
                 document.getElementById('confirmSentModal').style.display = 'flex';
             }, 800);
@@ -1001,7 +1030,7 @@
 
         function renderAdminOrdersList() {
             const adminOrdersEl = document.getElementById('adminOrdersList');
-            const ordersKeys = Object.keys(window.savedOrdersData).reverse(); // الأحدث أولاً
+            const ordersKeys = Object.keys(window.savedOrdersData).reverse();
 
             if (ordersKeys.length === 0) {
                 adminOrdersEl.innerHTML = `<p style="text-align:center; color:var(--desc-text); font-weight:700; padding:25px 0;">لا توجد طلبات مؤكدة في السجل حتى الآن 📭</p>`;
@@ -1011,7 +1040,6 @@
             adminOrdersEl.innerHTML = ordersKeys.map((key, idx) => {
                 const ord = window.savedOrdersData[key];
                 
-                // تحضير قائمة المنتجات بشكل مدرج ومنسق
                 let itemsFormattedHtml = '';
                 if (ord.items && Array.isArray(ord.items)) {
                     itemsFormattedHtml = ord.items.map(item => `
