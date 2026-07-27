@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toyor-el-fayoumi-v8';
+const CACHE_NAME = 'toyor-el-fayoumi-v9';
 const urlsToCache = [
   './',
   './index.html',

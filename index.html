@@ -252,11 +252,54 @@
         .btn-enable-all { background: #25D366; color: white; }
         .btn-disable-all { background: #ff3b30; color: white; }
 
-        /* تظليل كروت الأوردرات في الأدمن */
-        .admin-order-card { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 12px; margin-bottom: 12px; font-size: 0.82rem; line-height: 1.5; }
-        .admin-order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 6px; margin-bottom: 6px; font-weight: 800; color: var(--accent); }
-        .admin-order-body { margin-bottom: 8px; white-space: pre-line; }
-        .admin-order-del-btn { background: #ff3b30; color: white; border: none; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; cursor: pointer; float: left; }
+        /* --- تصميم الكروت المنقح والمنسق بامتياز للإدارة --- */
+        .admin-order-card { 
+            background: var(--bg); 
+            border: 1px solid rgba(138, 21, 27, 0.15); 
+            border-radius: 18px; 
+            padding: 14px; 
+            margin-bottom: 14px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+        }
+        .admin-order-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 2px solid rgba(138, 21, 27, 0.1); 
+            padding-bottom: 8px; 
+            margin-bottom: 10px; 
+        }
+        .admin-order-customer { font-weight: 800; font-size: 0.95rem; color: var(--accent); }
+        .admin-order-phone { font-weight: 700; font-size: 0.85rem; color: var(--main-text); direction: ltr; display: inline-block; }
+        
+        .admin-order-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+        .admin-badge { padding: 3px 8px; border-radius: 8px; font-size: 0.72rem; font-weight: 800; background: rgba(0,0,0,0.05); color: var(--main-text); }
+        .admin-badge.time { background: rgba(198, 156, 82, 0.15); color: #8a6215; }
+        .admin-badge.type { background: rgba(138, 21, 27, 0.1); color: var(--accent); }
+        .admin-badge.pay { background: rgba(37, 211, 102, 0.15); color: #15793a; }
+
+        .admin-order-items-box { 
+            background: var(--white); 
+            border-radius: 12px; 
+            padding: 10px; 
+            margin-bottom: 10px; 
+            border: 1px solid rgba(0,0,0,0.04); 
+        }
+        .admin-order-item-row { display: flex; justify-content: space-between; font-size: 0.83rem; font-weight: 700; padding: 4px 0; border-bottom: 1px dashed rgba(0,0,0,0.05); }
+        .admin-order-item-row:last-child { border-bottom: none; }
+        .admin-order-item-name { color: var(--main-text); }
+        .admin-order-item-price { color: var(--yellow-gold); font-weight: 800; }
+
+        .admin-order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+        .admin-order-total { font-size: 0.95rem; font-weight: 800; color: var(--accent); }
+        .admin-order-del-btn { background: #ff3b30; color: white; border: none; padding: 6px 12px; border-radius: 10px; font-size: 0.78rem; font-weight: 800; cursor: pointer; }
+
+        /* مودال تأكيد الإرسال للعميل */
+        .confirm-dialog-content { text-align: center; }
+        .confirm-dialog-btns { display: flex; gap: 10px; margin-top: 15px; }
+        .confirm-dialog-btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 800; font-size: 0.88rem; cursor: pointer; }
+        .confirm-btn-yes { background: #25D366; color: white; }
+        .confirm-btn-no { background: rgba(0,0,0,0.08); color: var(--main-text); }
     </style>
 </head>
 <body>
@@ -372,6 +415,22 @@
         </div>
     </div>
 
+    <!-- مودال تأكيد إرسال الرسالة للعميل -->
+    <div class="modal" id="confirmSentModal" style="align-items: center;">
+        <div class="modal-content" style="border-radius: 20px; max-width: 400px; padding: 25px;">
+            <div class="confirm-dialog-content">
+                <div style="font-size: 3rem; margin-bottom: 8px;">📲</div>
+                <h3 style="color: var(--accent); margin-bottom: 8px;">هل قمت بإرسال الرسالة على الواتساب؟</h3>
+                <p style="font-size: 0.85rem; color: var(--desc-text); font-weight: 700;">يرجى التأكيد لتسجيل الأوردر بنجاح في قاعدة البيانات وتجهيزه فوراً.</p>
+                
+                <div class="confirm-dialog-btns">
+                    <button class="confirm-dialog-btn confirm-btn-yes" onclick="finalizeOrderSaving(true)">نعم، تم الإرسال ✅</button>
+                    <button class="confirm-dialog-btn confirm-btn-no" onclick="finalizeOrderSaving(false)">لم أرسلها ❌</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- مودال لوحة تحكم الإدارة -->
     <div class="modal" id="adminModal" onclick="if(event.target==this) toggleAdminModal(false)">
         <div class="modal-content">
@@ -391,11 +450,11 @@
                 <div id="adminItemsList"></div>
             </div>
 
-            <!-- تبويب سجل الطلبات -->
+            <!-- تبويب سجل الطلبات المنسق -->
             <div id="adminOrdersSection" style="display: none;">
-                <div style="display:flex; justify-style:space-between; align-items:center; margin-bottom:10px;">
-                    <span style="font-size:0.85rem; font-weight:800; color:var(--desc-text);">📋 قائمة الأوردرات المطلوبة حديثاً:</span>
-                    <button onclick="clearAllOrdersHistory()" style="background:#ff3b30; color:white; border:none; padding:4px 8px; border-radius:8px; font-size:0.75rem; font-weight:800; cursor:pointer;">مسح الكل 🗑️</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <span style="font-size:0.88rem; font-weight:800; color:var(--desc-text);">📋 قائمة الأوردرات المؤكدة فقط:</span>
+                    <button onclick="clearAllOrdersHistory()" style="background:#ff3b30; color:white; border:none; padding:5px 10px; border-radius:8px; font-size:0.75rem; font-weight:800; cursor:pointer;">مسح الكل 🗑️</button>
                 </div>
                 <div id="adminOrdersList"></div>
             </div>
@@ -465,6 +524,7 @@
         window.savedOrdersData = {};
         window.currentSelectedCategory = "";
         window.currentAdminTab = 'items';
+        let pendingOrderData = null; // تخزين مؤقت للطلب قبل التأكيد
 
         const sizeOptions = [
             { val: 1.0, text: "1.0 كيلو" },
@@ -755,7 +815,7 @@
 
             if (notes) displayName += `\n   📝 ملاحظة: ${notes}`;
 
-            cart.push({name: displayName, price: totalItemPrice.toString(), img: img, category: category});
+            cart.push({name: displayName, price: totalItemPrice.toString(), img: img, category: category, rawName: name});
             
             btn.innerText = 'تمت الإضافة للسلة ✔️'; btn.classList.add('added');
             setTimeout(() => { btn.innerText = 'اطلب الآن 🛒'; btn.classList.remove('added'); }, 2000);
@@ -851,28 +911,50 @@
 
             msg += `\n✨ *طيور الفيومي - طعم بلدي ونظافة تضمن صحة عيلتك* ✨`;
 
-            // حفظ الطلب في قواعد بيانات Firebase بمجرد ضغط زر الإرسال
-            if (window.db && window.dbRef && window.dbPush) {
-                const ordersRef = window.dbRef(window.db, 'orders');
-                const now = new Date();
-                const timeString = now.toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
+            const now = new Date();
+            const timeString = now.toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
 
-                window.dbPush(ordersRef, {
-                    customerName: n,
-                    phone: p,
-                    address: selectedOrderType === 'delivery' ? a : 'تيك اواي',
-                    orderType: typeLabel,
-                    paymentType: selectedPaymentType === 'cash' ? 'نقدياً' : `كاش إلكتروني (${selectedWalletType})`,
-                    total: currentTotal,
-                    details: cart.map(i => `${i.name} (${i.price}ج)`).join(' | '),
-                    fullMsg: msg,
-                    timestamp: timeString,
-                    createdAt: Date.now()
-                });
-            }
+            // تجهيز بيانات الطلب مؤقتاً لحين تأكيد العميل أنه أرسله للواتساب
+            pendingOrderData = {
+                customerName: n,
+                phone: p,
+                address: selectedOrderType === 'delivery' ? a : 'تيك اواي',
+                orderType: typeLabel,
+                paymentType: selectedPaymentType === 'cash' ? 'نقدياً' : `كاش إلكتروني (${selectedWalletType})`,
+                total: currentTotal,
+                items: cart.map(i => ({ name: i.name, price: i.price })),
+                timestamp: timeString,
+                createdAt: Date.now()
+            };
 
-            window.open(`https://wa.me/${WA_MAIN_NUMBER}?text=${encodeURIComponent(msg)}`);
+            // إغلاق مودال السلة وفتح الواتساب
+            toggleCart(false);
+            window.open(`https://wa.me/${WA_MAIN_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+
+            // إظهار نافذة تأكيد الإرسال للعميل
+            setTimeout(() => {
+                document.getElementById('confirmSentModal').style.display = 'flex';
+            }, 800);
         }
+
+        function finalizeOrderSaving(isSent) {
+            document.getElementById('confirmSentModal').style.display = 'none';
+
+            if (isSent && pendingOrderData) {
+                if (window.db && window.dbRef && window.dbPush) {
+                    const ordersRef = window.dbRef(window.db, 'orders');
+                    window.dbPush(ordersRef, pendingOrderData);
+                    alert("✅ تم تأكيد وتسجيل أوردرك بنجاح! شكرًا لطلبك من طيور الفيومي.");
+                    cart = [];
+                    updateCart();
+                }
+            } else {
+                alert("ℹ️ لم يتم تسجيل الأوردر. يمكنك إعادة إرساله في أي وقت من السلة.");
+            }
+            pendingOrderData = null;
+        }
+
+        window.finalizeOrderSaving = finalizeOrderSaving;
 
         /* --- لوحة تحكم الأدمن --- */
         function promptAdminPassword() {
@@ -919,31 +1001,58 @@
 
         function renderAdminOrdersList() {
             const adminOrdersEl = document.getElementById('adminOrdersList');
-            const ordersKeys = Object.keys(window.savedOrdersData).reverse(); // أحدث الطلبات بالأعلى
+            const ordersKeys = Object.keys(window.savedOrdersData).reverse(); // الأحدث أولاً
 
             if (ordersKeys.length === 0) {
-                adminOrdersEl.innerHTML = `<p style="text-align:center; color:var(--desc-text); font-weight:700; padding:20px 0;">لا توجد طلبات مسجلة حتى الآن 📭</p>`;
+                adminOrdersEl.innerHTML = `<p style="text-align:center; color:var(--desc-text); font-weight:700; padding:25px 0;">لا توجد طلبات مؤكدة في السجل حتى الآن 📭</p>`;
                 return;
             }
 
-            adminOrdersEl.innerHTML = ordersKeys.map(key => {
+            adminOrdersEl.innerHTML = ordersKeys.map((key, idx) => {
                 const ord = window.savedOrdersData[key];
+                
+                // تحضير قائمة المنتجات بشكل مدرج ومنسق
+                let itemsFormattedHtml = '';
+                if (ord.items && Array.isArray(ord.items)) {
+                    itemsFormattedHtml = ord.items.map(item => `
+                        <div class="admin-order-item-row">
+                            <span class="admin-order-item-name">${item.name}</span>
+                            <span class="admin-order-item-price">${item.price} ج.م</span>
+                        </div>
+                    `).join('');
+                } else if (ord.details) {
+                    itemsFormattedHtml = `<div style="font-size:0.8rem; font-weight:700;">${ord.details}</div>`;
+                }
+
                 return `
                 <div class="admin-order-card">
                     <div class="admin-order-header">
-                        <span>👤 ${ord.customerName} - 📞 ${ord.phone}</span>
-                        <button class="admin-order-del-btn" onclick="deleteSingleOrder('${key}')">حذف 🗑️</button>
+                        <div>
+                            <span class="admin-order-customer">👤 ${ord.customerName}</span>
+                            <span style="font-size:0.75rem; color:var(--desc-text); font-weight:700;"> (#${ordersKeys.length - idx})</span>
+                        </div>
+                        <a href="tel:${ord.phone}" class="admin-order-phone">📞 ${ord.phone}</a>
                     </div>
-                    <div style="font-size:0.75rem; color:var(--desc-text); font-weight:800; margin-bottom:4px;">
-                        ⏰ ${ord.timestamp || ''} | 🛵 ${ord.orderType} | 💳 ${ord.paymentType}
+
+                    <div class="admin-order-badges">
+                        <span class="admin-badge time">⏰ ${ord.timestamp || 'غير محدد'}</span>
+                        <span class="admin-badge type">${ord.orderType || 'دليفري'}</span>
+                        <span class="admin-badge pay">💳 ${ord.paymentType || 'نقدياً'}</span>
                     </div>
-                    ${ord.address && ord.address !== 'تيك اواي' ? `<div style="font-size:0.78rem; font-weight:700;">📍 ${ord.address}</div>` : ''}
-                    <div class="admin-order-body">
-                        <b>📋 الطلبات:</b>
-                        ${ord.details}
+
+                    ${ord.address && ord.address !== 'تيك اواي' ? `
+                    <div style="font-size:0.82rem; font-weight:700; color:var(--accent); background:rgba(0,0,0,0.03); padding:6px 10px; border-radius:10px; margin-bottom:10px;">
+                        📍 <b>العنوان:</b> ${ord.address}
+                    </div>` : ''}
+
+                    <div class="admin-order-items-box">
+                        <div style="font-size:0.78rem; font-weight:800; color:var(--desc-text); margin-bottom:6px; border-bottom:1px solid rgba(0,0,0,0.05); padding-bottom:4px;">📦 الأصناف المطلوبة:</div>
+                        ${itemsFormattedHtml}
                     </div>
-                    <div style="font-size:0.85rem; font-weight:800; color:var(--yellow-gold); text-align:left;">
-                        إجمالي: ${ord.total} ج.م
+
+                    <div class="admin-order-footer">
+                        <div class="admin-order-total">الإجمالي: ${ord.total} ج.م</div>
+                        <button class="admin-order-del-btn" onclick="deleteSingleOrder('${key}')">مسح الطلب 🗑️</button>
                     </div>
                 </div>`;
             }).join('');
