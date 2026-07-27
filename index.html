@@ -235,6 +235,10 @@
         .install-btn { background: var(--yellow-gold); color: #2b1e1a; border: none; padding: 6px 15px; border-radius: 10px; font-weight: 800; font-size: 0.8rem; cursor: pointer; }
 
         /* --- لوحة تحكم الأدمن --- */
+        .admin-nav-tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 8px; }
+        .admin-tab-btn { flex: 1; padding: 8px 10px; background: rgba(0,0,0,0.05); border: none; border-radius: 10px; font-weight: 800; font-size: 0.82rem; cursor: pointer; color: var(--main-text); }
+        .admin-tab-btn.active { background: var(--accent); color: white; }
+
         .admin-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 12px; margin-bottom: 8px; }
         .admin-item-name { font-size: 0.85rem; font-weight: 800; }
         .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
@@ -247,6 +251,12 @@
         .admin-bulk-btn { flex: 1; padding: 8px; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; font-size: 0.8rem; }
         .btn-enable-all { background: #25D366; color: white; }
         .btn-disable-all { background: #ff3b30; color: white; }
+
+        /* تظليل كروت الأوردرات في الأدمن */
+        .admin-order-card { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 12px; margin-bottom: 12px; font-size: 0.82rem; line-height: 1.5; }
+        .admin-order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 6px; margin-bottom: 6px; font-weight: 800; color: var(--accent); }
+        .admin-order-body { margin-bottom: 8px; white-space: pre-line; }
+        .admin-order-del-btn { background: #ff3b30; color: white; border: none; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; cursor: pointer; float: left; }
     </style>
 </head>
 <body>
@@ -365,14 +375,30 @@
     <!-- مودال لوحة تحكم الإدارة -->
     <div class="modal" id="adminModal" onclick="if(event.target==this) toggleAdminModal(false)">
         <div class="modal-content">
-            <h2 style="margin-bottom: 12px; color: var(--accent);">⚙️ لوحة تحكم الأصناف</h2>
-            
-            <div class="admin-bulk-btns">
-                <button class="admin-bulk-btn btn-enable-all" onclick="setAllItemsAvailability(true)">✅ تشغيل جميع الأصناف</button>
-                <button class="admin-bulk-btn btn-disable-all" onclick="setAllItemsAvailability(false)">🚫 إيقاف جميع الأصناف</button>
+            <h2 style="margin-bottom: 12px; color: var(--accent);">⚙️ لوحة تحكم الإدارة</h2>
+
+            <div class="admin-nav-tabs">
+                <button class="admin-tab-btn active" id="tabItemsBtn" onclick="switchAdminTab('items')">📦 حالة الأصناف</button>
+                <button class="admin-tab-btn" id="tabOrdersBtn" onclick="switchAdminTab('orders')">📜 سجل الطلبات المرسلة</button>
             </div>
 
-            <div id="adminItemsList"></div>
+            <!-- تبويب تحكم الأصناف -->
+            <div id="adminItemsSection">
+                <div class="admin-bulk-btns">
+                    <button class="admin-bulk-btn btn-enable-all" onclick="setAllItemsAvailability(true)">✅ تشغيل جميع الأصناف</button>
+                    <button class="admin-bulk-btn btn-disable-all" onclick="setAllItemsAvailability(false)">🚫 إيقاف جميع الأصناف</button>
+                </div>
+                <div id="adminItemsList"></div>
+            </div>
+
+            <!-- تبويب سجل الطلبات -->
+            <div id="adminOrdersSection" style="display: none;">
+                <div style="display:flex; justify-style:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="font-size:0.85rem; font-weight:800; color:var(--desc-text);">📋 قائمة الأوردرات المطلوبة حديثاً:</span>
+                    <button onclick="clearAllOrdersHistory()" style="background:#ff3b30; color:white; border:none; padding:4px 8px; border-radius:8px; font-size:0.75rem; font-weight:800; cursor:pointer;">مسح الكل 🗑️</button>
+                </div>
+                <div id="adminOrdersList"></div>
+            </div>
             
             <button class="submit-btn" style="margin-top: 15px;" onclick="toggleAdminModal(false)">إغلاق اللوحة</button>
         </div>
@@ -381,7 +407,7 @@
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA6hrf5ziL8BWCDxkp8qg69fbbOvni_1KY",
@@ -401,6 +427,8 @@
         window.dbRef = ref;
         window.dbOnValue = onValue;
         window.dbSet = set;
+        window.dbPush = push;
+        window.dbRemove = remove;
 
         // الاستماع الفوري لتوفر المنتجات
         const availabilityRef = ref(db, 'availability');
@@ -409,8 +437,17 @@
             if (window.currentSelectedCategory) {
                 window.filterCat(window.currentSelectedCategory);
             }
-            if (document.getElementById('adminModal').style.display === 'flex') {
+            if (document.getElementById('adminModal').style.display === 'flex' && window.currentAdminTab === 'items') {
                 window.renderAdminControlList();
+            }
+        });
+
+        // الاستماع الفوري للطلبات المرسلة
+        const ordersRef = ref(db, 'orders');
+        onValue(ordersRef, (snapshot) => {
+            window.savedOrdersData = snapshot.val() || {};
+            if (document.getElementById('adminModal').style.display === 'flex' && window.currentAdminTab === 'orders') {
+                window.renderAdminOrdersList();
             }
         });
     </script>
@@ -425,7 +462,9 @@
         let birdCounts = {}; 
         let generalKiloCounts = {};
         window.itemAvailability = {};
+        window.savedOrdersData = {};
         window.currentSelectedCategory = "";
+        window.currentAdminTab = 'items';
 
         const sizeOptions = [
             { val: 1.0, text: "1.0 كيلو" },
@@ -811,6 +850,27 @@
             }
 
             msg += `\n✨ *طيور الفيومي - طعم بلدي ونظافة تضمن صحة عيلتك* ✨`;
+
+            // حفظ الطلب في قواعد بيانات Firebase بمجرد ضغط زر الإرسال
+            if (window.db && window.dbRef && window.dbPush) {
+                const ordersRef = window.dbRef(window.db, 'orders');
+                const now = new Date();
+                const timeString = now.toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
+
+                window.dbPush(ordersRef, {
+                    customerName: n,
+                    phone: p,
+                    address: selectedOrderType === 'delivery' ? a : 'تيك اواي',
+                    orderType: typeLabel,
+                    paymentType: selectedPaymentType === 'cash' ? 'نقدياً' : `كاش إلكتروني (${selectedWalletType})`,
+                    total: currentTotal,
+                    details: cart.map(i => `${i.name} (${i.price}ج)`).join(' | '),
+                    fullMsg: msg,
+                    timestamp: timeString,
+                    createdAt: Date.now()
+                });
+            }
+
             window.open(`https://wa.me/${WA_MAIN_NUMBER}?text=${encodeURIComponent(msg)}`);
         }
 
@@ -819,7 +879,7 @@
             const pass = prompt("🔐 أدخل كلمة سر الإدارة:");
             if (pass === "200200") {
                 toggleAdminModal(true);
-                renderAdminControlList();
+                switchAdminTab('items');
             } else if (pass !== null) {
                 alert("❌ كلمة السر غير صحيحة!");
             }
@@ -827,6 +887,17 @@
 
         function toggleAdminModal(show) {
             document.getElementById('adminModal').style.display = show ? 'flex' : 'none';
+        }
+
+        function switchAdminTab(tab) {
+            window.currentAdminTab = tab;
+            document.getElementById('tabItemsBtn').classList.toggle('active', tab === 'items');
+            document.getElementById('tabOrdersBtn').classList.toggle('active', tab === 'orders');
+            document.getElementById('adminItemsSection').style.display = tab === 'items' ? 'block' : 'none';
+            document.getElementById('adminOrdersSection').style.display = tab === 'orders' ? 'block' : 'none';
+
+            if (tab === 'items') renderAdminControlList();
+            if (tab === 'orders') renderAdminOrdersList();
         }
 
         function renderAdminControlList() {
@@ -844,6 +915,56 @@
                     </label>
                 </div>`;
             }).join('');
+        }
+
+        function renderAdminOrdersList() {
+            const adminOrdersEl = document.getElementById('adminOrdersList');
+            const ordersKeys = Object.keys(window.savedOrdersData).reverse(); // أحدث الطلبات بالأعلى
+
+            if (ordersKeys.length === 0) {
+                adminOrdersEl.innerHTML = `<p style="text-align:center; color:var(--desc-text); font-weight:700; padding:20px 0;">لا توجد طلبات مسجلة حتى الآن 📭</p>`;
+                return;
+            }
+
+            adminOrdersEl.innerHTML = ordersKeys.map(key => {
+                const ord = window.savedOrdersData[key];
+                return `
+                <div class="admin-order-card">
+                    <div class="admin-order-header">
+                        <span>👤 ${ord.customerName} - 📞 ${ord.phone}</span>
+                        <button class="admin-order-del-btn" onclick="deleteSingleOrder('${key}')">حذف 🗑️</button>
+                    </div>
+                    <div style="font-size:0.75rem; color:var(--desc-text); font-weight:800; margin-bottom:4px;">
+                        ⏰ ${ord.timestamp || ''} | 🛵 ${ord.orderType} | 💳 ${ord.paymentType}
+                    </div>
+                    ${ord.address && ord.address !== 'تيك اواي' ? `<div style="font-size:0.78rem; font-weight:700;">📍 ${ord.address}</div>` : ''}
+                    <div class="admin-order-body">
+                        <b>📋 الطلبات:</b>
+                        ${ord.details}
+                    </div>
+                    <div style="font-size:0.85rem; font-weight:800; color:var(--yellow-gold); text-align:left;">
+                        إجمالي: ${ord.total} ج.م
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function deleteSingleOrder(key) {
+            if (confirm("هل تريد حذف هذا الأوردر من السجل؟")) {
+                if (window.db && window.dbRef && window.dbRemove) {
+                    const singleOrderRef = window.dbRef(window.db, `orders/${key}`);
+                    window.dbRemove(singleOrderRef);
+                }
+            }
+        }
+
+        function clearAllOrdersHistory() {
+            if (confirm("هل أنت تأكد من مسح جميع الأوردرات المسجلة بالكامل؟")) {
+                if (window.db && window.dbRef && window.dbRemove) {
+                    const allOrdersRef = window.dbRef(window.db, 'orders');
+                    window.dbRemove(allOrdersRef);
+                }
+            }
         }
 
         function toggleItemStatus(itemKey, status) {
@@ -867,7 +988,11 @@
 
         window.promptAdminPassword = promptAdminPassword;
         window.toggleAdminModal = toggleAdminModal;
+        window.switchAdminTab = switchAdminTab;
         window.renderAdminControlList = renderAdminControlList;
+        window.renderAdminOrdersList = renderAdminOrdersList;
+        window.deleteSingleOrder = deleteSingleOrder;
+        window.clearAllOrdersHistory = clearAllOrdersHistory;
         window.toggleItemStatus = toggleItemStatus;
         window.setAllItemsAvailability = setAllItemsAvailability;
 
