@@ -1037,18 +1037,10 @@
             window.open(`https://wa.me/${WA_MAIN_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        /* --- لوحة تحكم الأدمن والتحقق المرة الواحدة --- */
+        /* --- لوحة تحكم الأدمن والتحقق المطلوب في كل مرة --- */
         function promptAdminPassword() {
-            // إذا كان هذا الجهاز مسجلاً مسبقاً كـ صاحب مطعم، يفتح مباشرة بدون طلب كلمة سر مرة أخرى!
-            if (window.isOwnerDevice()) {
-                toggleAdminModal(true);
-                switchAdminTab('items');
-                return;
-            }
-
             const pass = prompt("🔐 أدخل كلمة سر الإدارة:");
             if (pass === window.currentAdminPass) {
-                // حفظ هذا الجهاز للأبد كـ صاحب مطعم!
                 window.setOwnerDevice();
                 requestNotificationPermission();
                 
