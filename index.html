@@ -138,10 +138,7 @@
             border: 1px solid rgba(0,0,0,0.05); 
             position: relative;
         }
-        .food-card.unavailable {
-            opacity: 0.55;
-            filter: grayscale(0.8);
-        }
+        .food-card.unavailable { opacity: 0.55; filter: grayscale(0.8); }
         .food-card-top { display: flex; gap: 12px; align-items: flex-start; }
         .item-img-box { width: 95px; height: 95px; border-radius: 16px; overflow: hidden; background: #e5e5ea; flex-shrink: 0; }
         .item-img-box img { width: 100%; height: 100%; object-fit: cover; }
@@ -227,7 +224,7 @@
         .wallet-options-wrapper { display: none; background: rgba(138, 21, 27, 0.05); padding: 8px; border-radius: 14px; border: 1px solid rgba(138, 21, 27, 0.12); margin-bottom: 10px; }
         .wallet-info-text { font-size: 0.78rem; font-weight: 700; color: var(--accent); text-align: center; margin-top: 4px; }
 
-        .user-fields input { background: var(--bg); border: none; padding: 12px; border-radius: 12px; width: 100%; margin-bottom: 8px; color: var(--main-text); text-align: right; font-weight: 700; outline: none; }
+        .user-fields input, .admin-pass-fields input { background: var(--bg); border: none; padding: 12px; border-radius: 12px; width: 100%; margin-bottom: 8px; color: var(--main-text); text-align: right; font-weight: 700; outline: none; }
         .submit-btn { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 16px; width: 100%; font-weight: 800; cursor: pointer; font-size: 0.95rem; }
 
         /* شريط التثبيت */
@@ -252,7 +249,6 @@
         .btn-enable-all { background: #25D366; color: white; }
         .btn-disable-all { background: #ff3b30; color: white; }
 
-        /* --- تصميم الكروت المنقح والمنسق للإدارة --- */
         .admin-order-card { 
             background: var(--bg); 
             border: 1px solid rgba(138, 21, 27, 0.15); 
@@ -293,13 +289,6 @@
         .admin-order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
         .admin-order-total { font-size: 0.95rem; font-weight: 800; color: var(--accent); }
         .admin-order-del-btn { background: #ff3b30; color: white; border: none; padding: 6px 12px; border-radius: 10px; font-size: 0.78rem; font-weight: 800; cursor: pointer; }
-
-        /* مودال تأكيد الإرسال للعميل */
-        .confirm-dialog-content { text-align: center; }
-        .confirm-dialog-btns { display: flex; gap: 10px; margin-top: 15px; }
-        .confirm-dialog-btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: 800; font-size: 0.88rem; cursor: pointer; }
-        .confirm-btn-yes { background: #25D366; color: white; }
-        .confirm-btn-no { background: rgba(0,0,0,0.08); color: var(--main-text); }
     </style>
 </head>
 <body>
@@ -415,22 +404,6 @@
         </div>
     </div>
 
-    <!-- مودال تأكيد إرسال الرسالة للعميل -->
-    <div class="modal" id="confirmSentModal" style="align-items: center;">
-        <div class="modal-content" style="border-radius: 20px; max-width: 400px; padding: 25px;">
-            <div class="confirm-dialog-content">
-                <div style="font-size: 3rem; margin-bottom: 8px;">📲</div>
-                <h3 style="color: var(--accent); margin-bottom: 8px;">هل قمت بإرسال الرسالة على الواتساب؟</h3>
-                <p style="font-size: 0.85rem; color: var(--desc-text); font-weight: 700;">يرجى التأكيد لتسجيل الأوردر بنجاح في قاعدة البيانات وتجهيزه فوراً.</p>
-                
-                <div class="confirm-dialog-btns">
-                    <button class="confirm-dialog-btn confirm-btn-yes" onclick="finalizeOrderSaving(true)">نعم، تم الإرسال ✅</button>
-                    <button class="confirm-dialog-btn confirm-btn-no" onclick="finalizeOrderSaving(false)">لم أرسلها ❌</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- مودال لوحة تحكم الإدارة -->
     <div class="modal" id="adminModal" onclick="if(event.target==this) toggleAdminModal(false)">
         <div class="modal-content">
@@ -438,7 +411,8 @@
 
             <div class="admin-nav-tabs">
                 <button class="admin-tab-btn active" id="tabItemsBtn" onclick="switchAdminTab('items')">📦 حالة الأصناف</button>
-                <button class="admin-tab-btn" id="tabOrdersBtn" onclick="switchAdminTab('orders')">📜 سجل الطلبات المرسلة</button>
+                <button class="admin-tab-btn" id="tabOrdersBtn" onclick="switchAdminTab('orders')">📜 سجل الطلبات</button>
+                <button class="admin-tab-btn" id="tabSettingsBtn" onclick="switchAdminTab('settings')">🔑 كلمة السر</button>
             </div>
 
             <!-- تبويب تحكم الأصناف -->
@@ -450,13 +424,27 @@
                 <div id="adminItemsList"></div>
             </div>
 
-            <!-- تبويب سجل الطلبات المنسق -->
+            <!-- تبويب سجل الطلبات -->
             <div id="adminOrdersSection" style="display: none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                    <span style="font-size:0.88rem; font-weight:800; color:var(--desc-text);">📋 قائمة الأوردرات المؤكدة فقط:</span>
+                    <span style="font-size:0.88rem; font-weight:800; color:var(--desc-text);">📋 قائمة الأوردرات المؤكدة:</span>
                     <button onclick="clearAllOrdersHistory()" style="background:#ff3b30; color:white; border:none; padding:5px 10px; border-radius:8px; font-size:0.75rem; font-weight:800; cursor:pointer;">مسح الكل 🗑️</button>
                 </div>
                 <div id="adminOrdersList"></div>
+            </div>
+
+            <!-- تبويب تغيير كلمة السر -->
+            <div id="adminSettingsSection" style="display: none;">
+                <div style="background: rgba(0,0,0,0.03); padding: 15px; border-radius: 16px; border: 1px solid rgba(0,0,0,0.05);" class="admin-pass-fields">
+                    <h3 style="font-size: 0.95rem; color: var(--accent); margin-bottom: 10px;">🔐 تغيير كلمة سر الإدارة</h3>
+                    <p style="font-size: 0.8rem; color: var(--desc-text); margin-bottom: 12px; font-weight: 700;">
+                        تغيير كلمة السر عبر الفايربيس للتحكم الكامل بجميع الأجهزة.
+                    </p>
+                    <input type="password" id="oldAdminPass" placeholder="كلمة المرور الحالية">
+                    <input type="password" id="newAdminPass" placeholder="كلمة المرور الجديدة">
+                    <input type="password" id="confirmAdminPass" placeholder="تأكيد كلمة المرور الجديدة">
+                    <button class="submit-btn" style="margin-top: 5px;" onclick="changeAdminPassword()">حفظ كلمة السر الجديدة 💾</button>
+                </div>
             </div>
             
             <button class="submit-btn" style="margin-top: 15px;" onclick="toggleAdminModal(false)">إغلاق اللوحة</button>
@@ -489,7 +477,14 @@
         window.dbPush = push;
         window.dbRemove = remove;
 
-        // الاستماع الفوري لتوفر المنتجات
+        window.currentAdminPass = "200200";
+        const passRef = ref(db, 'adminPassword');
+        onValue(passRef, (snapshot) => {
+            if (snapshot.exists()) {
+                window.currentAdminPass = snapshot.val();
+            }
+        });
+
         const availabilityRef = ref(db, 'availability');
         onValue(availabilityRef, (snapshot) => {
             window.itemAvailability = snapshot.val() || {};
@@ -501,10 +496,22 @@
             }
         });
 
-        // الاستماع الفوري للطلبات المرسلة
+        // الاستماع المباشر الفوري للطلبات وظهور الإشعار وصوت الجرس لصاحب المطعم
+        let isFirstLoad = true;
         const ordersRef = ref(db, 'orders');
         onValue(ordersRef, (snapshot) => {
-            window.savedOrdersData = snapshot.val() || {};
+            const newOrders = snapshot.val() || {};
+            const previousCount = Object.keys(window.savedOrdersData || {}).length;
+            const newCount = Object.keys(newOrders).length;
+
+            // إذا كان هناك أوردر جديد تم تسجيله وكان الجهاز مسجلاً كـ "صاحب مطعم"
+            if (!isFirstLoad && newCount > previousCount && window.isOwnerDevice()) {
+                window.playOrderAlertSound();
+                window.triggerOrderNotification();
+            }
+            isFirstLoad = false;
+            window.savedOrdersData = newOrders;
+
             if (document.getElementById('adminModal').style.display === 'flex' && window.currentAdminTab === 'orders') {
                 window.renderAdminOrdersList();
             }
@@ -524,7 +531,6 @@
         window.savedOrdersData = {};
         window.currentSelectedCategory = "";
         window.currentAdminTab = 'items';
-        let pendingOrderData = null; 
 
         const sizeOptions = [
             { val: 1.0, text: "1.0 كيلو" },
@@ -539,7 +545,6 @@
         ];
 
         let selectedSizes = {};
-
         let selectedOrderType = 'delivery';
         let selectedPaymentType = 'cash';
         let selectedWalletType = 'vodafone';
@@ -547,6 +552,65 @@
         const NUM_VODAFONE = '01068088020';
         const NUM_INSTAPAY = '01017716880';
         const WA_MAIN_NUMBER = '201017716880';
+
+        /* --- التأكد من هوية صاحب المطعم المحفوظة دائماً --- */
+        window.isOwnerDevice = function() {
+            return localStorage.getItem('isRestaurantOwner') === 'true';
+        };
+
+        window.setOwnerDevice = function() {
+            localStorage.setItem('isRestaurantOwner', 'true');
+        };
+
+        // طلب إذن الإشعارات فور تمييز الجهاز كصاحب مطعم
+        function requestNotificationPermission() {
+            if ("Notification" in window && Notification.permission !== "granted") {
+                Notification.requestPermission();
+            }
+        }
+
+        // إخراج صوت جرس مميز عبر Web Audio API يعمل على كافة الهواتف المتوافقة
+        window.playOrderAlertSound = function() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                
+                // تشغيل سلسة نغمات جرس تنبيهية
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.4);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + i * 0.15);
+                    osc.stop(ctx.currentTime + i * 0.15 + 0.4);
+                });
+            } catch (e) { console.log(e); }
+        };
+
+        // الإشعار المباشر على الشاشة
+        window.triggerOrderNotification = function() {
+            if ("Notification" in window && Notification.permission === "granted") {
+                const options = {
+                    body: '🔔 هناك أوردر جديد تم تأكيده للتو من العميل!',
+                    icon: 'images/logotoyor.png',
+                    vibrate: [300, 100, 300, 100, 300],
+                    requireInteraction: true
+                };
+                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.ready.then(reg => {
+                        reg.showNotification('🍗 أوردر جديد - طيور الفيومي', options);
+                    });
+                } else {
+                    new Notification('🍗 أوردر جديد - طيور الفيومي', options);
+                }
+            }
+        };
 
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
@@ -713,7 +777,6 @@
                         </button>
                     </div>`;
                 } else {
-                    // إعداد القيمة الافتراضية للوزن (للمصنوعات تبدأ من 1.0 كيلو)
                     if (generalKiloCounts[cardKey] === undefined) {
                         generalKiloCounts[cardKey] = 1.0;
                     }
@@ -778,7 +841,7 @@
                 let currentVal = generalKiloCounts[cardKey] !== undefined ? generalKiloCounts[cardKey] : 1.0;
                 let step = 0.5;
                 let newVal = currentVal + (delta * step);
-                if (newVal < 0.5) newVal = 0.5; // لا يقل عن نص كيلو
+                if (newVal < 0.5) newVal = 0.5;
 
                 generalKiloCounts[cardKey] = newVal;
                 document.getElementById(`gen_kilo_${cardKey}`).innerText = formatKiloDisplay(newVal);
@@ -917,6 +980,7 @@
             notice.innerHTML = wType === 'vodafone' ? `رقم محفظة فودافون كاش: <b>${NUM_VODAFONE}</b>` : `رقم انستا باي: <b>${NUM_INSTAPAY}</b>`;
         }
 
+        /* --- إرسال وتأكيد الطلب الفوري وتخزينه في قاعدة البيانات فوراً --- */
         function sendToWA() {
             const n = document.getElementById('uName').value.trim(), p = document.getElementById('uPhone').value.trim(), a = document.getElementById('uAddr').value.trim();
             if (!n || !p || cart.length === 0) return alert("يرجى إكمال البيانات واختيار الأصناف من السلة");
@@ -946,7 +1010,7 @@
             const now = new Date();
             const timeString = now.toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
 
-            pendingOrderData = {
+            const orderDataObject = {
                 customerName: n,
                 phone: p,
                 address: selectedOrderType === 'delivery' ? a : 'تيك اواي',
@@ -958,37 +1022,36 @@
                 createdAt: Date.now()
             };
 
-            toggleCart(false);
-            window.open(`https://wa.me/${WA_MAIN_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-
-            setTimeout(() => {
-                document.getElementById('confirmSentModal').style.display = 'flex';
-            }, 800);
-        }
-
-        function finalizeOrderSaving(isSent) {
-            document.getElementById('confirmSentModal').style.display = 'none';
-
-            if (isSent && pendingOrderData) {
-                if (window.db && window.dbRef && window.dbPush) {
-                    const ordersRef = window.dbRef(window.db, 'orders');
-                    window.dbPush(ordersRef, pendingOrderData);
-                    alert("✅ تم تأكيد وتسجيل أوردرك بنجاح! شكرًا لطلبك من طيور الفيومي.");
-                    cart = [];
-                    updateCart();
-                }
-            } else {
-                alert("ℹ️ لم يتم تسجيل الأوردر. يمكنك إعادة إرساله في أي وقت من السلة.");
+            // ⚡ الحفظ الفوري المباشر في داتابيز الفايربيس بمجرد الضغط ⚡
+            if (window.db && window.dbRef && window.dbPush) {
+                const ordersRef = window.dbRef(window.db, 'orders');
+                window.dbPush(ordersRef, orderDataObject);
             }
-            pendingOrderData = null;
+
+            // تفريغ السلة وإخفاء المودال
+            cart = [];
+            updateCart();
+            toggleCart(false);
+
+            // توجيه العميل فوراً إلى الواتساب
+            window.open(`https://wa.me/${WA_MAIN_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        window.finalizeOrderSaving = finalizeOrderSaving;
-
-        /* --- لوحة تحكم الأدمن --- */
+        /* --- لوحة تحكم الأدمن والتحقق المرة الواحدة --- */
         function promptAdminPassword() {
+            // إذا كان هذا الجهاز مسجلاً مسبقاً كـ صاحب مطعم، يفتح مباشرة بدون طلب كلمة سر مرة أخرى!
+            if (window.isOwnerDevice()) {
+                toggleAdminModal(true);
+                switchAdminTab('items');
+                return;
+            }
+
             const pass = prompt("🔐 أدخل كلمة سر الإدارة:");
-            if (pass === "200200") {
+            if (pass === window.currentAdminPass) {
+                // حفظ هذا الجهاز للأبد كـ صاحب مطعم!
+                window.setOwnerDevice();
+                requestNotificationPermission();
+                
                 toggleAdminModal(true);
                 switchAdminTab('items');
             } else if (pass !== null) {
@@ -1004,11 +1067,47 @@
             window.currentAdminTab = tab;
             document.getElementById('tabItemsBtn').classList.toggle('active', tab === 'items');
             document.getElementById('tabOrdersBtn').classList.toggle('active', tab === 'orders');
+            document.getElementById('tabSettingsBtn').classList.toggle('active', tab === 'settings');
+
             document.getElementById('adminItemsSection').style.display = tab === 'items' ? 'block' : 'none';
             document.getElementById('adminOrdersSection').style.display = tab === 'orders' ? 'block' : 'none';
+            document.getElementById('adminSettingsSection').style.display = tab === 'settings' ? 'block' : 'none';
 
             if (tab === 'items') renderAdminControlList();
             if (tab === 'orders') renderAdminOrdersList();
+        }
+
+        function changeAdminPassword() {
+            const oldP = document.getElementById('oldAdminPass').value;
+            const newP = document.getElementById('newAdminPass').value;
+            const confirmP = document.getElementById('confirmAdminPass').value;
+
+            if (oldP !== window.currentAdminPass) {
+                alert("❌ كلمة المرور الحالية غير صحيحة!");
+                return;
+            }
+
+            if (!newP) {
+                alert("⚠️ يرجى كتابة كلمة المرور الجديدة!");
+                return;
+            }
+
+            if (newP !== confirmP) {
+                alert("⚠️ كلمة المرور الجديدة وتأكيدها غير متطابقين!");
+                return;
+            }
+
+            if (window.db && window.dbRef && window.dbSet) {
+                const passRef = window.dbRef(window.db, 'adminPassword');
+                window.dbSet(passRef, newP).then(() => {
+                    alert("✅ تم تغيير كلمة السر بنجاح ورُبطت بقاعدة البيانات!");
+                    document.getElementById('oldAdminPass').value = '';
+                    document.getElementById('newAdminPass').value = '';
+                    document.getElementById('confirmAdminPass').value = '';
+                }).catch(() => {
+                    alert("❌ حدث خطأ أثناء الحفظ في الفايربيس!");
+                });
+            }
         }
 
         function renderAdminControlList() {
@@ -1126,6 +1225,7 @@
         window.promptAdminPassword = promptAdminPassword;
         window.toggleAdminModal = toggleAdminModal;
         window.switchAdminTab = switchAdminTab;
+        window.changeAdminPassword = changeAdminPassword;
         window.renderAdminControlList = renderAdminControlList;
         window.renderAdminOrdersList = renderAdminOrdersList;
         window.deleteSingleOrder = deleteSingleOrder;
